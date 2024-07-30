@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+      layout:decorate="~{layout}">
+<body>
+<div layout:fragment="mainView">
+
+    <!-- Start Banner Area -->
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Danh mục sản phẩm</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="/pandaBooIndex">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="#">Cửa hàng<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="/category">Danh mục sản phẩm</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-5">
+                <div class="sidebar-categories">
+                    <div class="head">Loại sản phẩm</div>
+                    <ul class="main-categories">
+                        <li class="main-nav-list">
+                            <a href="/category">Tất cả</a>
+                        </li>
+                        <li class="main-nav-list" th:each="item : ${categories}">
+                            <a th:text="${item?.cat_name}" th:href="'/category?catId=' + ${item?.cat_id}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xl-9 col-lg-8 col-md-7">
+                <!-- Start Filter Bar -->
+                <!-- <div class="filter-bar d-flex flex-wrap align-items-center">
+                    <div class="sorting">
+                        <select>
+                            <option value="1">Liên quan</option>
+                            <option value="1">Mới nhất</option>
+                            <option value="1">Bán chạy</option>
+                        </select>
+                    </div>
+                    <div class="sorting mr-auto">
+                        <select>
+                            <option value="1">Giá từ thấp đến cao</option>
+                            <option value="1">Giá từ cao đến thấp</option>
+                        </select>
+                    </div>
+                </div> -->
+                <div class="filter-bar d-flex flex-wrap align-items-center">
+                	<div class="sorting mr-auto">
+                    <form th:action="@{/category}" method="get">                        
+                            <select name="size" onchange="this.form.submit()">
+                                <option th:value="3" th:selected="${selectedSize == 3}">Hiện 3</option>
+                                <option th:value="6" th:selected="${selectedSize == 6}">Hiện 6</option>
+                                <option th:value="9" th:selected="${selectedSize == 9}">Hiện 9</option>
+                            </select>
+                        
+                        <div th:if="${cat_id != null}">                        
+                        	<input type="hidden" name="catId" th:value="${cat_id}"/>
+                        </div>
+                        <input type="hidden" name="page" th:value="${productPage.number + 1}"/>
+                    </form>
+                    </div>
+                    <div class="pagination">
+                        <div th:classappend="${productPage.first ? 'disabled' : ''}">
+                            <a th:if="${!productPage.first && cat_id != null}"
+                               th:href="'/category?page=' + (${productPage.number}) + '&size=' + ${selectedSize} + '&catId=' + ${cat_id}"
+                               class="prev-arrow">
+                                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${!productPage.first && cat_id == null && selectedSize != null}"
+                               th:href="'/category?page=' + (${productPage.number}) + '&size=' + ${selectedSize}"
+                               class="prev-arrow">
+                                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${productPage.first}" class="prev-arrow">
+                                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <div th:each="pageNum : ${pageNumbers}">
+                            <div th:if="${cat_id != null}">
+                                <a th:href="'/category?page=' + ${pageNum} + '&size=' + ${selectedSize} + '&catId=' + ${cat_id}"
+                                   th:classappend="${pageNum == productPage.number + 1 ? 'active' : ''}"
+                                   th:text="${pageNum}">1</a>
+                            </div>
+                            <div th:if="${cat_id == null && selectedSize != null}">
+                                <a th:href="'/category?page=' + ${pageNum} + '&size=' + ${selectedSize}"
+                                   th:classappend="${pageNum == productPage.number + 1 ? 'active' : ''}"
+                                   th:text="${pageNum}">1</a>
+                            </div>
+                        </div>
+                        <div th:classappend="${productPage.last ? 'disabled' : ''}">
+                            <a th:if="${productPage != null && !productPage.last && cat_id != null}"
+                               th:href="'/category?page=' + (${productPage.number + 2}) + '&size=' + ${selectedSize} + '&catId=' + ${cat_id}"
+                               class="next-arrow">
+                                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${productPage != null && !productPage.last && cat_id == null && selectedSize != null}"
+                               th:href="'/category?page=' + (${productPage.number + 2}) + '&size=' + ${selectedSize}"
+                               class="next-arrow">
+                                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${productPage.last}" class="next-arrow">
+                                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Filter Bar -->
+                <!-- Start Best Seller -->
+                <section class="lattest-product-area pb-40 category-list">
+                    <div class="row">
+                        <!-- single product -->
+                        <div class="col-lg-4 col-md-6" th:each="prod : ${productPage}">
+                            <div class="single-product">
+                                <img class="img-fluid" th:src="'/images/'+${prod?.images?.get(0)?.getName()}" style="width: 100% ; height: 250px;" alt="">
+                                <div class="product-details">
+                                    <h6>
+                                        <a href="#" style="color: black;" th:text="${prod?.prod_name}"> Túi tự đan có dây đeo chéo phối nơ xinh </a>
+                                    </h6>
+                                    <div class="price">
+                                        <h6 th:text="${#numbers.formatCurrency(prod?.red_price)}">190.000đ</h6>
+                                        <h6 class="l-through" th:text="${#numbers.formatCurrency(prod?.price)}">240.000đ</h6>
+                                    </div>
+                                    <div class="prd-bottom">
+                                        <input name="id" type="hidden" th:value="${prod?.prod_id}">
+                                        <input name="clientId" type="hidden" th:value="${session.cliByAcc?.getCli_id()}"> 
+                                        <a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id} + '&clientId=' + ${session.cliByAcc?.getCli_id()} + '&path=' + ${path} + '&page=' + ${productPage.number + 1} + '&size=' + ${selectedSize}}"
+											class="social-info"> <span class="ti-bag"></span>
+												<p class="hover-text">Thêm vào giỏ</p>
+										</a> 
+                                        <a th:href="'/singleProduct?id=' +${prod?.prod_id}" class="social-info">
+                                            <span class="lnr lnr-move"></span>
+                                            <p class="hover-text">Xem thêm</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- End Best Seller -->
+                <!-- Start Filter Bar -->
+                <div class="filter-bar d-flex flex-wrap align-items-center">
+                	<div class="sorting mr-auto">
+                    <form th:action="@{/category}" method="get">                        
+                            <select name="size" onchange="this.form.submit()">
+                                <option th:value="3" th:selected="${selectedSize == 3}">Hiện 3</option>
+                                <option th:value="6" th:selected="${selectedSize == 6}">Hiện 6</option>
+                                <option th:value="9" th:selected="${selectedSize == 9}">Hiện 9</option>
+                            </select>
+                        
+                        <div th:if="${cat_id != null}">                        
+                        	<input type="hidden" name="catId" th:value="${cat_id}"/>
+                        </div>
+                        <input type="hidden" name="page" th:value="${productPage.number + 1}"/>
+                    </form>
+                    </div>
+                    <div class="pagination">
+                        <div th:classappend="${productPage.first ? 'disabled' : ''}">
+                            <a th:if="${!productPage.first && cat_id != null}"
+                               th:href="'/category?page=' + (${productPage.number}) + '&size=' + ${selectedSize} + '&catId=' + ${cat_id}"
+                               class="prev-arrow">
+                                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${!productPage.first && cat_id == null && selectedSize != null}"
+                               th:href="'/category?page=' + (${productPage.number}) + '&size=' + ${selectedSize}"
+                               class="prev-arrow">
+                                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${productPage.first}" class="prev-arrow">
+                                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <div th:each="pageNum : ${pageNumbers}">
+                            <div th:if="${cat_id != null}">
+                                <a th:href="'/category?page=' + ${pageNum} + '&size=' + ${selectedSize} + '&catId=' + ${cat_id}"
+                                   th:classappend="${pageNum == productPage.number + 1 ? 'active' : ''}"
+                                   th:text="${pageNum}">1</a>
+                            </div>
+                            <div th:if="${cat_id == null && selectedSize != null}">
+                                <a th:href="'/category?page=' + ${pageNum} + '&size=' + ${selectedSize}"
+                                   th:classappend="${pageNum == productPage.number + 1 ? 'active' : ''}"
+                                   th:text="${pageNum}">1</a>
+                            </div>
+                        </div>
+                        <div th:classappend="${productPage.last ? 'disabled' : ''}">
+                            <a th:if="${productPage != null && !productPage.last && cat_id != null}"
+                               th:href="'/category?page=' + (${productPage.number + 2}) + '&size=' + ${selectedSize} + '&catId=' + ${cat_id}"
+                               class="next-arrow">
+                                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${productPage != null && !productPage.last && cat_id == null && selectedSize != null}"
+                               th:href="'/category?page=' + (${productPage.number + 2}) + '&size=' + ${selectedSize}"
+                               class="next-arrow">
+                                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                            </a>
+                            <a th:if="${productPage.last}" class="next-arrow">
+                                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Filter Bar -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Quick Product View -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="container relative">
+            <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="product-quick-view">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="quick-view-carousel">
+                            <div class="item"
+                                 style="background: url(/img/organic-food/q1.jpg);"></div>
+                            <div class="item"
+                                 style="background: url(/img/organic-food/q1.jpg);"></div>
+                            <div class="item"
+                                 style="background: url(/img/organic-food/q1.jpg);"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="quick-view-content">
+                            <div class="top">
+                                <h3 class="head">Mill Oil 1000W Heater, White</h3>
+                                <div class="price d-flex align-items-center">
+                                    <span class="lnr lnr-tag"></span> <span class="ml-10">$149.99</span>
+                                </div>
+                                <div class="category">
+                                    Category: <span>Household</span>
+                                </div>
+                                <div class="available">
+                                    Availibility: <span>In Stock</span>
+                                </div>
+                            </div>
+                            <div class="middle">
+                                <p class="content">Mill Oil is an innovative oil filled
+                                    radiator with the most modern technology. If you are looking
+                                    for something that can make your interior look awesome, and at
+                                    the same time give you the pleasant warm feeling during the
+                                    winter.</p>
+                                <a href="#" class="view-full">View full Details <span
+                                        class="lnr lnr-arrow-right"></span></a>
+                            </div>
+                            <div class="bottom">
+                                <div class="color-picker d-flex align-items-center">
+                                    Color: <span class="single-pick"></span> <span
+                                            class="single-pick"></span> <span class="single-pick"></span>
+                                    <span class="single-pick"></span> <span class="single-pick"></span>
+                                </div>
+                                <div class="quantity-container d-flex align-items-center mt-15">
+                                    Quantity: <input type="text" class="quantity-amount ml-15"
+                                                     value="1"/>
+                                    <div class="arrow-btn d-inline-flex flex-column">
+                                        <button class="increase arrow" type="button"
+                                                title="Increase Quantity">
+                                            <span class="lnr lnr-chevron-up"></span>
+                                        </button>
+                                        <button class="decrease arrow" type="button"
+                                                title="Decrease Quantity">
+                                            <span class="lnr lnr-chevron-down"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-20">
+                                    <a href="#" class="view-btn color-2"><span>Add to
+                                            Cart</span></a> <a href="#" class="like-btn"><span
+                                        class="lnr lnr-layers"></span></a> <a href="#" class="like-btn"><span
+                                        class="lnr lnr-heart"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

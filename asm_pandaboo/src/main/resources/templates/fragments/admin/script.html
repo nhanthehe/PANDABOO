@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	class="no-js">
+
+<body>
+	<div th:fragment="script">
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script th:src="@{/images/js/jquery-3.3.1.slim.min.js}"></script>
+		<script th:src="@{/images/js/popper.min.js}"></script>
+		<script th:src="@{/images/js/vendor/bootstrap.min.js}"></script>
+		<script th:src="@{/images/js/jquery-3.3.1.min.js}"></script>
+		<script th:src="@{/images/js/chart.js}"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$(".xp-menubar").on('click', function() {
+					$("#sidebar").toggleClass('active');
+					$("#content").toggleClass('active');
+				});
+
+				$('.xp-menubar,.body-overlay').on('click', function() {
+					$("#sidebar,.body-overlay").toggleClass('show-nav');
+				});
+
+			});
+		</script>
+	</div>
+</body>
+</html>

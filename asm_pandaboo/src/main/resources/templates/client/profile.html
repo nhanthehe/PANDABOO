@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layout}">
+<body>
+	<div layout:fragment="mainView">
+		<!-- Start Banner Area -->
+		<section class="banner-area organic-breadcrumb">
+			<div class="container">
+				<div
+					class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+					<div class="col-first">
+						<h1>Quản lý hồ sơ cá nhân</h1>
+						<nav class="d-flex align-items-center">
+							<a href="/pandaBooIndex">Trang chủ<span
+								class="lnr lnr-arrow-right"></span></a> <a href="/singleProduct">Thanh
+								toán</a>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Banner Area -->
+
+		<!-- Start Account Management Area -->
+		<section class="login_box_area section_gap">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-12">
+						<form class="row" action="/profile" method="POST"
+							enctype="multipart/form-data">
+							<div class="col-lg-9">	
+								<input type="hidden" name="accId" th:value="${session.acc.getAcc_id()}">
+								<div class="form-group">
+									<label class="form-label">Họ tên</label> <input type="text"
+										class="form-control" id="fullname" name="fullname"
+										th:value="${client?.accountEntity?.fullname}">
+									<p class="text-danger"
+										th:if='${error?.getFieldError("fullname") != null}'
+										th:text='${error?.getFieldError("fullname")?.getDefaultMessage()}'></p>
+								</div>
+
+								<div class="form-group">
+									<label class="form-label">Số điện thoại</label> <input
+										type="text" class="form-control" id="phone" name="phone"
+										th:value="${client?.phone}" >	
+									<p class="text-danger"
+										th:if='${error?.getFieldError("phone") != null}'
+										th:text='${error?.getFieldError("phone")?.getDefaultMessage()}'></p>								
+								</div>
+								<div class="form-group">
+									<label class="form-label">Địa chỉ</label> 
+									<div class="row">
+										<div class="col-3">
+											<label class="form-label">Số nhà(Đường)</label> <input type="text"
+												class="form-control" id="road" name="road"
+												th:value="${client?.road}">												
+										</div>
+										<div class="col-3">
+											<label class="form-label">Phường(Xã)</label> <input type="text"
+												class="form-control" id="ward" name="ward"
+												th:value="${client?.ward}">												
+										</div>
+										<div class="col-3">
+											<label class="form-label">Quận(Huyện)</label> <input type="text"
+												class="form-control" id="district" name="district"
+												th:value="${client?.district}">												
+										</div>
+										<div class="col-3">
+											<label class="form-label">Tỉnh(Thành phố)</label> 
+											<input type="text"
+												class="form-control" id="city" name="city"
+												th:value="${client?.city}">												
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="form-label">Email</label> <input type="email"
+										class="form-control" id="email" name="email"
+										th:value="${client?.email}">
+									<p class="text-danger"
+										th:if='${error?.getFieldError("email") != null}'
+										th:text='${error?.getFieldError("email")?.getDefaultMessage()}'></p>		
+								</div>
+								<div class="form-group">
+									<label for="" class="col-form-label">Hình ảnh</label>
+									<div class="custom-file">
+										<input type="file" name="avatar" class="form-file" accept="image/*"> 
+									</div>
+
+								</div>
+							</div>
+							<div class="col-lg-3">
+								<div>
+									<img alt="" th:src="'/images/' + ${client?.accountEntity?.avatar}" style="width: 100%; height: 340px">
+								</div>
+							</div>
+							<div class="form-group">
+								<button type="submit" value="save" name="action"
+									class="btn primary-btn">Chỉnh Sửa</button>
+								<button type="reset" class="btn primary-btn">Làm mới</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Account Management Area -->
+	</div>
+</html>

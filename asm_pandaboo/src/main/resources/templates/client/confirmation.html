@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layout}">
+<body>
+	<div layout:fragment="mainView">
+
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>Đơn mua</h1>
+					<nav class="d-flex align-items-center">
+						<a href="/pandaBooIndex">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+						<a href="/category">Đơn mua</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Order Details Area =================-->
+	<section class="order_details section_gap">
+		<div class="container">
+			<h3 class="title_confirmation"> <span th:text="${paymentEntity?.status == 1 ? 'Cảm ơn bạn. Đơn hàng của bạn đang chờ xác nhận.' : paymentEntity?.status == 2 ? 'Cảm ơn bạn. Đơn hàng của bạn đã được nhận.' : 'Đơn hàng này của bạn đã hủy.'}"></span> </h3>
+			<div class="row order_d_inner">
+				<div class="col-lg-4">
+					<div class="details_item">
+						<h4>Thông tin đặt hàng</h4>
+						<ul class="list">
+							<li><a href="#"><span>Mã đơn hàng</span> : <span class="" th:text="${paymentEntity?.payId}"></span> </a></li>
+							<li><a href="#"><span>Ngày đặt hàng</span> : <span th:text="${#dates.format(paymentEntity?.payDate, 'dd/MM/yyyy')}"></span> </a></li>
+							<li><a href="#"><span>Tổng thanh toán</span> : <span th:text="${#numbers.formatCurrency(paymentEntity?.orderTotal)}"></span></a></li>
+							<li><a href="#"><span>Phương thức thanh toán</span> : <span th:text="${paymentEntity?.payMethod}"></span> </a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="details_item">
+						<h4>Địa chỉ giao hàng</h4>
+						<ul class="list">
+							<li><a href="#"><span>Số nhà</span> : 187/4</a></li>
+							<li><a href="#"><span>Khu vực, phường(xã) </span> : Thường Thạnh</a></li>							
+							<li><a href="#"><span>Quận (Huyện)</span> : Cái Răng</a></li>
+							<li><a href="#"><span>Tỉnh (Thành phố)</span> : Cần Thơ</a></li>							
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="details_item">
+						<h4>Địa chỉ nhận hàng</h4>
+						<ul class="list">
+							<li><a href="#"><span>Số nhà</span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.road}"></span></a></li>
+							<li><a href="#"><span>Khu vực, phường(xã) </span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.ward}"></span></a></li>
+							<li><a href="#"><span>Quận (Huyện)</span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.district}"></span></a></li>
+							<li><a href="#"><span>Tỉnh (Thành phố)</span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.city}"></span></a></li>							
+						</ul>
+					</div>
+				</div>
+			</div>
+				<div class="order_details_table">
+					<h2>Sản phẩm đã đặt</h2>
+					<div class="table-responsive">
+						<table class="table">
+							<thead>
+								<tr>
+									<th scope="col">Sản phẩm</th>
+									<th scope="col">Số lượng</th>
+									<th scope="col">Thành tiền</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="item : ${paymentEntity.paymentdetailPaymentEntity}">
+									<td>
+										<p th:text="${item?.prod_name}">Túi tự đan có dây đeo chéo
+											phối nơ xinh</p>
+									</td>
+									<td>
+										<h5 th:text="'x'+${item?.prod_quantity}">x 01</h5>
+									</td>
+									<td>
+										<p
+											th:text="${#numbers.formatCurrency(item?.red_price * item?.prod_quantity)}">190.000đ</p>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h4>Tổng tiền hàng</h4>
+									</td>
+									<td>
+										<h5></h5>
+									</td>
+									<td>
+										<p th:text="${#numbers.formatCurrency(totalPayment)}">204.900đ</p>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h4>Phí vận chuyển</h4>
+									</td>
+									<td>
+										<h5></h5>
+									</td>
+									<td>
+										<p th:text="${#numbers.formatCurrency(shippingFee)}">30.000đ</p>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h4>Voucher</h4>
+									</td>
+									<td>
+										<h5></h5>
+									</td>
+									<td>
+										<p th:if="${paymentEntity?.promotionEnity != null}"
+											th:text="'- ' + ${#numbers.formatCurrency(totalPayment * (paymentEntity?.promotionEnity?.discount/100))}">30.000đ</p>
+										<p th:if="${paymentEntity?.promotionEnity == null}"
+											th:text="${#numbers.formatCurrency(totalPayment * 0)}">30.000đ</p>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h4>Tổng thanh toán</h4>
+									</td>
+									<td>
+										<h5></h5>
+									</td>
+									<td>
+										<p
+											th:text="${#numbers.formatCurrency(paymentEntity?.orderTotal)}">234.900đ</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="payment_item">
+						<div class="radion_btn">
+							<input type="radio" checked="checked" id="delivery" 
+								name="payMethod"> 
+								<label for="delivery">Thanh
+								toán khi nhận hàng</label>
+							<div class="check"></div>
+						</div>
+						<p>
+							Vui lòng chuẩn bị đủ <span
+								th:text="${#numbers.formatCurrency(paymentEntity?.orderTotal)}">234.900đ</span>
+							để thanh toán cho đơn vị vận chuyển.
+						</p>
+					</div>
+				</div>
+			</div>
+	</section>
+	<!--================End Order Details Area =================-->
+								
+
+	</div>
+</body>
+
+</html>

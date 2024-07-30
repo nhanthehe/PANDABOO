@@ -1,0 +1,281 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layoutAdmin}">
+<body>
+	<div layout:fragment="mainView">
+		<!------main-content-start----------->
+		<div class="main-content">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="table-wrapper row">
+						<div class="table-title">
+							<div class="row">
+								<div>
+									<h2 class="ml-lg-2">Quản Lý Sản Phẩm</h2>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12 mt-4 pl-0">
+							<form class="row contact_form"
+								th:action="${product == null ? '/productsDetail' : '/update-product'}"
+								method="POST" enctype="multipart/form-data">
+								<div th:if="${product != null}">
+									<input type="hidden" name="prod_id"
+										th:value="${product?.prod_id}">
+								</div>
+								<div class="col-md-12 form-group">
+									<div class="row">
+										<div class="col-lg-12">
+											<div class="col-12 form-group">
+												<label>Tên sản phẩm</label> <input type="text"
+													class="form-control" th:value="${product?.prod_name}"
+													id="tenSP" name="prod_name">
+												<p class="text-danger"
+													th:if='${error?.getFieldError("prod_name") != null}'
+													th:text='${error?.getFieldError("prod_name")?.getDefaultMessage()}'></p>
+											</div>
+
+											<div class="col-12 form-group">
+												<div class="row">
+													<div class="col-md-6 form-group">
+														<label for="">Loại sản phẩm
+															<button type="button" class="btn btn-secondary"
+																data-toggle="modal" data-target=".bd-example-modal-lg">
+																<i class="fa-solid fa-circle-plus"></i>
+															</button>
+														</label>
+														<div class="mb-3">
+															<select class="form-control" name="cat_id" id="cat_id">
+																<option value="-1" selected>-----Chọn loại-----</option>
+																<option th:each="item : ${categorys}"
+																	th:value="${item?.cat_id}" th:text="${item?.cat_name}"
+																	th:selected="${product?.categoryEntity?.cat_id==item?.cat_id}">Len</option>
+															</select>
+														</div>
+														<p class="text-danger"
+															th:if='${error?.getFieldError("cat_id") != -1 }'
+															th:text='${error?.getFieldError("cat_id")?.getDefaultMessage()}'></p>
+													</div>
+
+													<div class="col-md-6 form-group">
+														<label for="">Đơn vị tính
+															<button type="button" class="btn btn-secondary"
+																data-toggle="modal" data-target=".bd-unit-modal-lg">
+																<i class="fa-solid fa-circle-plus"></i>
+															</button>
+														</label>
+														<div class="mb-3">
+															<select class="form-control" name="unit_id" id="unit_id">
+																<option value="-1" selected>-----Chọn dơn vị
+																	tính-----</option>
+																<option th:each="item : ${units}"
+																	th:value="${item?.unit_id}"
+																	th:text="${item?.unit_name}"
+																	th:selected="${product?.unitEntity?.unit_id==item?.unit_id}">Cái</option>
+															</select>
+														</div>
+														<p class="text-danger"
+															th:if='${error?.getFieldError("unit_id") != -1 }'
+															th:text='${error?.getFieldError("unit_id")?.getDefaultMessage()}'></p>
+													</div>
+												</div>
+											</div>
+											<div class="col-12 form-group">
+												<label>Giá gốc</label> <input type="text" step="0.01"
+													class="form-control" th:value="${product?.price}"
+													id="price" name="price">
+												<p class="text-danger"
+													th:if='${error?.getFieldError("price") != null}'
+													th:text='${error?.getFieldError("price")?.getDefaultMessage()}'></p>
+											</div>
+											<div class="col-12 form-group">
+												<label>Giá bán</label> <input type="text" step="0.01"
+													class="form-control" th:value="${product?.red_price}"
+													id="red_price" name="red_price">
+												<p class="text-danger"
+													th:if='${error?.getFieldError("red_price") != null}'
+													th:text='${error?.getFieldError("red_price")?.getDefaultMessage()}'></p>
+											</div>
+											<div class="col-12 form-group">
+												<label>Mô tả</label>
+												<textarea class="form-control" name="descriptions"
+													id="descriptions" th:text="${product?.descriptions}"
+													rows="2"></textarea>
+												<p class="text-danger"
+													th:if='${error?.getFieldError("descriptions") != null }'
+													th:text='${error?.getFieldError("descriptions")?.getDefaultMessage()}'></p>
+											</div>
+											<div class="col-12 form-group">
+												<label>Hình ảnh</label> <input type="file" multiple
+													class="form-file" accept="image/*" id="images"
+													name="images">
+
+												<p class="text-danger" th:text="${NotImage}"></p>
+											</div>
+										</div>
+
+										<div class="col-lg-12">
+											<div class="row ml-5" th:if="${product != null}">
+												<div class="card p-0 col-2 m-2"
+													th:each="item : ${product?.images}">
+													<div class="card-body p-1">
+														<img alt="" class="w-100"
+															th:src="@{'/images/'+${item?.name}}"> <input
+															type="hidden" name="existingImages"
+															th:value="${item?.name}">
+													</div>
+													<div class="card-footer p-1">
+														<button type="submit"
+															th:formaction="@{/delete-productImg/{id}(id=${item?.img_id})}"
+															th:method="post" class="form-control btn-danger">
+															<i class="fa fa-trash"></i>
+														</button>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-lg-12">
+											<div class="form-group ml-5">
+												<input type="submit" role="button"
+													class="form-control primary-btn"
+													th:value="${product==null ? 'Thêm' : 'Cập nhật'}">
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!------main-content-end----------->
+			<!----category-modal start--------->
+			<div class="modal fade bd-example-modal-lg" tabindex="-1"
+				role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-xl">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Thêm loại sản phẩm</h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="row">
+							<div class="col-6 pl-4 ">
+								<table class="table">
+									<thead>
+										<tr>
+											<th>Mã loại</th>
+											<th>Tên loại</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody th:each="item : ${categorys}">
+										<tr>
+											<th scope="row" th:text="${item?.cat_id}">1</th>
+											<td th:text="${item?.cat_name}" style="font-size: 15px;">Trang
+												sức</td>
+											<td>
+												<div class="row ">
+													<div class="col-auto">
+														<form action="/delete-category" method="POST">
+															<input type="hidden" name="id" th:value="${item?.cat_id}">
+															<button name="" id="" class="btn btn-danger"
+																type="submit">
+																<i class="material-icons" data-toggle="tooltip"
+																	title="Delete">&#xE872;</i>
+															</button>
+														</form>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="col-6 pr-4">
+								<form action="/add_category" method="post">
+									<div class="form-group">
+										<label for="exampleInputPassword1">Tên loại</label> <input
+											type="text" class="form-control" name="cat_name"
+											id="exampleInputPassword1" placeholder="Tên loại">
+									</div>
+									<button type="submit" value="save" name="action"
+										class="form-control primary-btn">Thêm</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!----category-modal end--------->
+
+			<!----category-modal start--------->
+			<div class="modal fade bd-unit-modal-lg" tabindex="-1" role="dialog"
+				aria-labelledby="myLargeModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-xl">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Thêm đơn vị tính</h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="row">
+							<div class="col-6 pl-4 ">
+								<table class="table">
+									<thead>
+										<tr>
+											<th>Mã đơn vị</th>
+											<th>Tên đơn vị</th>
+											<th>
+										</tr>
+									</thead>
+									<tbody th:each="item : ${units}">
+										<tr>
+											<th scope="row" th:text="${item?.unit_id}">1</th>
+											<td th:text="${item?.unit_name}" style="font-size: 15px;">Trang
+												sức</td>
+											<td>
+												<div class="row ">
+													<div class="col-auto">
+														<form action="/delete-unit" method="POST">
+															<input type="hidden" name="id"
+																th:value="${item?.unit_id}">
+															<button name="" id="" class="btn btn-danger"
+																type="submit">
+																<i class="material-icons" data-toggle="tooltip"
+																	title="Delete">&#xE872;</i>
+															</button>
+														</form>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="col-6 pr-4">
+								<form action="/add_unit" method="post">
+									<div class="form-group">
+										<label for="exampleInputPassword1">Tên đơn vị</label> <input
+											type="text" class="form-control" name="unit_name"
+											id="exampleInputPassword1" placeholder="Tên loại">
+									</div>
+									<button type="submit" value="save" name="action"
+										class="form-control primary-btn">Thêm</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+			<!----category-modal end--------->
+		</div>
+</body>
+
+</html>

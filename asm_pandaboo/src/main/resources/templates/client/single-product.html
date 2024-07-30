@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layout}">
+<body>
+	<div layout:fragment="mainView">
+		<!-- Start Banner Area -->
+		<section class="banner-area organic-breadcrumb">
+			<div class="container">
+				<div
+					class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+					<div class="col-first">
+						<h1>Chi tiết sản phẩm</h1>
+						<nav class="d-flex align-items-center">
+							<a href="/pandaBooIndex">Trang chủ<span
+								class="lnr lnr-arrow-right"></span></a> <a href="#">Cửa hàng<span
+								class="lnr lnr-arrow-right"></span></a> <a href="/singleProduct">Chi
+								tiết sản phẩm</a>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Banner Area -->
+
+		<!--================Single Product Area =================-->
+		<div class="product_image_area">
+			<div class="container">
+				<div class="row s_product_inner">
+					<div class="col-lg-6" >
+						<div class="s_Product_carousel" >
+							<div class="single-prd-item" th:each="item : ${product?.images}">
+								<img class="img-fluid" th:src="@{'/images/'+${item?.name}}" alt="">
+							</div>							
+						</div>
+					</div>
+					<div class="col-lg-5 offset-lg-1">
+						<div class="s_product_text">
+							<h3 th:text="${product?.prod_name}">Túi tự đan có dây đeo chéo phối nơ xinh</h3>
+							<h2 th:text="${#numbers.formatCurrency(product?.red_price)}" class="d-inline mr-2">190.000đ</h2>
+							<h4 th:text="${#numbers.formatCurrency(product?.price)}" class="d-inline text-muted"
+								style="text-decoration: line-through;">240.000đ</h4>
+							<ul class="list mt-3">
+								<li><a class="active" href="#"><span>Đã bán</span> :
+									 <span th:text="${sold}">1.5M</span></a></li>
+							</ul>
+							<div class="product_count mt-3">
+								<label for="quantity">Số lượng:</label> 
+								<input type="number" th:value="${quantity}" name="quantity" min="1" id="quantity" title="số lượng:"
+									class="input-text qty"> 
+								<a	th:href="@{'/upQuantity?quantity=' + ${quantity} + '&path=' + ${path}}"
+									class="increase items-count" type="button"> 
+									<i class="lnr lnr-chevron-up"></i>
+								</a> 
+								<a 	th:href="@{'/downQuantity?quantity=' + ${quantity} + '&path=' + ${path}}"
+									class="reduced items-count" type="button"> 
+									<i class="lnr lnr-chevron-down"></i>
+								</a> 
+							</div>
+							<div class="card_area d-flex align-items-center">
+							<input name="clientId" type="hidden" th:value="${session.cliByAcc?.getCli_id()}">
+								<a  class="primary-btn" th:href="@{'/add-to-cart-with-quantity?id=' + ${product?.prod_id} + '&quantity=' + ${quantity} + '&clientId=' + ${session.cliByAcc?.getCli_id()} + '&path=' + ${path}}">Thêm vào giỏ</a>
+								<!-- <a class="icon_btn" href="#"><i class="lnr lnr lnr- diamond"></i></a>
+							<a class="icon_btn" href="#"><i class="lnr lnr lnr- heart"></i></a>  -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--================End Single Product Area =================-->
+
+		<!--================Product Description Area =================-->
+		<section class="product_description_area">
+			<div class="container">
+				<h2 class="description">Mô tả</h2>
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="home" role="tabpanel"
+						aria-labelledby="home-tab">	
+						<pre th:utext="${product?.descriptions}"></pre>					
+					</div>
+				</div>
+			</div>
+		</section>
+		<!--================End Product Description Area =================-->
+
+		<!-- Start related-product Area -->
+		<!-- <section class="related-product-area section_gap_bottom">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-6 text-center">
+						<div class="section-title">
+							<h1>Sản phẩm khác của shop</h1>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="row">							
+							<div class="col-lg-4 col-md-4 col-sm-6 mb-20">
+								<div class="single-related-product d-flex prodOfShop">
+									<a href="#"><img src="/img/product/p44.jpg" alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Túi đan tay da phong cách Hàn
+											Quốc đen</a>
+										<div class="price">
+											<h6>192.000đ</h6>
+											<h6 class="l-through">240.000đ</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section> -->
+		<!-- End related-product Area -->
+	</div>
+</body>
+
+</html>

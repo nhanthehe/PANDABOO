@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layoutAdmin}">
+	<head>
+			<link rel="stylesheet" th:href="@{/images/css/promotion.css}">
+	</head>
+<body>
+	<div layout:fragment="mainView">
+		<!-- Main Content -->
+		<section class="checkout_area section_gap">
+				<div class="container">
+					<div class="billing_details">
+						<div class="row">
+							<article class="col-lg-12">
+								<nav class="navbar navbar-expand-lg navbar-light bg-light">
+									<div class="container-fluid">
+										<form class="ms-auto">
+											<button class="btn btn-outline-warning" type="submit"
+												formaction="/add-promotion">
+												<i class="fa-solid fa-circle-plus"></i> Thêm ưu đãi
+											</button>
+										</form>
+
+
+									</div>
+								</nav>
+								<div class="col-lg-12">
+									<h3>Danh sách ưu đãi</h3>
+									<div class="table-responsive">
+										<table class="table table-striped custom-table">
+											<thead>
+												<tr>
+													<th scope="col">Mã ưu đãi</th>
+													<th scope="col">Tên ưu đãi</th>
+													<th scope="col">Gía bắt đầu</th>
+													<th scope="col">Ngày bắt đầu</th>
+													<th scope="col">Ngày kết thúc</th>
+													<th scope="col">Tỉ lệ giảm</th>
+													<th scope="col">Trạng thái</th>
+													<th scope="col">Ghi chú</th>
+													<th scope="col"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="promotion: ${promotions}">
+													<td th:text="${promotion.prom_id}"></td>
+													<td th:text="${promotion.prom_name}"></td>
+													<td th:text="${promotion.start_price}"></td>
+													<td th:text="${promotion.start_date}"></td>
+													<td th:text="${promotion.end_date}"></td>
+													<td th:text="${promotion.discount}"></td>
+													<td th:text="${promotion.status ? 'Đang hoạt động' : 'Ngừng hoạt động'}"></td>
+													<td th:text="${promotion.note}"></td>
+													<td>
+														<div class="row justify-content-center">
+															<div class="col-auto">
+																<a class="btn btn-primary"
+																	th:href="'/update-promotion?prom_id=' + ${promotion?.prom_id}"
+																	role="button">Sửa</a>
+															</div>
+															<div class="col-auto">
+																<form method="post" action="/delete-promotion">
+																	<input type="hidden" name="prom_id" th:value="${promotion?.prom_id}" />
+																	<button type="submit" class="btn btn-danger"
+																		role="button">Xoá</button>
+																</form>
+															</div>
+													
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</article>
+						</div>
+					</div>
+				</div>
+			</section>
+	</div>
+</body>
+
+</html>

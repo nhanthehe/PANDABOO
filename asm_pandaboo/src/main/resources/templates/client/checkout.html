@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layout}">
+<body>
+	<div layout:fragment="mainView">
+
+		<!-- Start Banner Area -->
+		<section class="banner-area organic-breadcrumb">
+			<div class="container">
+				<div
+					class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+					<div class="col-first">
+						<h1>Thanh toán</h1>
+						<nav class="d-flex align-items-center">
+							<a href="/pandaBooIndex">Trang chủ<span
+								class="lnr lnr-arrow-right"></span></a> <a href="/singleProduct">Thanh
+								toán</a>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End Banner Area -->
+
+		<!--================address Area =================-->
+		<section class="ftco-section pb-0">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="h5 mb-4 text-center"></h3>
+						<div class="">
+							<table class="table-cart">
+								<thead class="">
+									<tr>
+										<th class="pb-0">
+											<h5 class="address">
+												<img style="width: 40px" alt=""
+													th:src="@{/images/img/location.png}"> ĐỊA CHỈ NHẬN
+												HÀNG
+											</h5>
+										</th>
+										<th></th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="alert" role="alert">
+										<td style="font-size: 19px" class="pt-0" >
+											<span th:text="${client?.accountEntity?.fullname}"></span> <br>
+											<span th:text="${client?.phone}">0907541927</span>
+										</td>
+										<td><span th:text="${client?.road + ', ' + client?.ward + ', ' + client?.district + ', ' + client?.city}">187, khu vực Bình Phước, Phước Thới, Ô
+												Môn, Cần Thơ</span></td>
+										<td><a class="changeAddress" th:href="'/profile?accId='+${session.acc.getAcc_id()}">Thay đổi</a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!--================End address Area =================-->
+
+		<!--================Pay Area =================-->
+		<section class="ftco-section p-0">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="h5 mb-4 text-center"></h3>
+						<div class="table-wrap">
+							<table class="table-cart">
+								<thead class="thead-primary">
+									<tr>
+										<th>&nbsp;</th>
+										<th>Sản phẩm</th>
+										<th>Đơn giá</th>
+										<th>Số lượng</th>
+										<th>Thành tiền</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="alert" role="alert" th:each="item : ${cartItems}">
+										<td><img class="img" alt="" th:src="'/images/' + ${item?.paydetailProductEntity?.images[0]?.name}">
+										</td>
+										<td>
+											<div class="email">
+												<span th:text="${item?.paydetailProductEntity?.prod_name}">Túi tự đan có dây đeo chéo phối nơ xinh</span>
+											</div>
+										</td>
+										<td th:text="${#numbers.formatCurrency(item.paydetailProductEntity.red_price)}">190.000đ</td>
+										<td class="quantity">
+											<div class="product_count mt-4">
+												<span th:text="${item.quantity}">1</span>
+											</div>
+										</td>
+										<td th:text="${#numbers.formatCurrency(item.quantity * item.paydetailProductEntity.red_price)}">190.000đ</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td><span>Tổng số tiền</span></td>
+										<td>
+											<h5 th:text="${#numbers.formatCurrency(totalAmount)}">204.900đ</h5>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!--================End Pay Area =================-->
+
+		<section class="ftco-section p-0">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="h5 mb-4 text-center"></h3>
+						<div class="">
+							<!-- <table class="table-cart">
+								<thead class="">
+									<tr>
+										<th class="pb-0">
+											<h5 class="address">
+												<img style="width: 40px" alt=""
+													th:src="@{/images/img/promo-code.png}"> VOUCHER
+											</h5>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="alert" role="alert">
+										<td class="pt-0" >
+											<form action="">
+												<select class="form-control" name="promotionId">
+													<option value="">Select a promotion</option>
+													<option th:each="promotion : ${promotions}"
+														th:value="${promotionprom_id}"
+														th:text="${promotion.prom_name} + ' - ' + ${#numbers.formatCurrency(promotion.discount)} + ' discount'">
+													</option>
+												</select>
+											</form>
+										</td>										
+									</tr>
+								</tbody>
+							</table> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!--================Checkout Area =================-->
+		<section class="checkout_area section_gap" style="padding-top: 40px">
+			<div class="container">
+				<div class="billing_details">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="order_box">
+								<h2></h2>
+								<ul class="list list_2">
+									<li><a href="#">Tổng tiền hàng <span th:text="${#numbers.formatCurrency(totalAmount)}">204.900đ</span></a></li>
+									<li><a href="#">Phí vận chuyển <span th:text="${#numbers.formatCurrency(shippingFee)}">30.000đ</span></a></li>
+									<!-- <li><a href="#">Voucher <span th:text="${#numbers.formatCurrency(voucher)}">#3</span></a></li> -->
+									<!-- <li><a href="#">Tổng thanh toán <span th:text="${#numbers.formatCurrency(totalAmount+shippingFee)}">234.900đ</span></a></li> -->
+								</ul>
+								<form th:action="@{error != null ? '/checkout?clientId=' + ${session.cliByAcc?.getCli_id()} : '/confirmation'}" th:method="POST">
+									
+									<div class="payment_item">
+										<div class="radion_btn">
+											<input type="radio" id="delivery"
+												th:checked="${pay?.payMethod}" name="payMethod">
+											<label for="delivery">Thanh toán khi nhận hàng</label>
+											<div class="check"></div>
+										</div>
+										<!-- <p>Vui lòng chuẩn bị đủ <span th:text="${#numbers.formatCurrency(totalAmount>500000?totalAmount:30000+totalAmount)}">234.900đ</span> để
+											thanh toán cho đơn vị vận chuyển.</p> -->
+										
+									</div>
+									<p class="text-danger" th:if='${error?.getFieldError("payMethod") != null}' th:text='${error?.getFieldError("payMethod")?.getDefaultMessage()}'></p>
+									<!-- <div class="payment_item">
+										<div class="radion_btn">
+											<input type="radio" id="transfer"
+												th:checked="${pay?.payMethod==false}" name="payMethod">
+											<label for="transfer">Chuyển khoản</label> <img
+												src="/img/product/card.jpg" alt="">
+											<div class="check"></div>
+										</div>
+										<p>Bạn có thể thanh toán bằng thẻ tín dụng hoặc tài khoản
+											PandaPay.</p>
+									</div> -->
+									<table class="table-cart">
+										<thead class="">
+											<tr>
+												<th class="pb-0">
+													<h5 class="address">
+														<img style="width: 40px" alt=""
+															th:src="@{/images/img/promo-code.png}"> VOUCHER
+													</h5>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr class="alert" role="alert">
+												<td class="pt-0">
+													<select class="form-control" name="prom_id">
+													<option value="-1">Select a promotion</option>
+												 	<option th:each="promotion : ${promotions}"
+															th:value="${promotion?.prom_id}" th:text="${promotion?.prom_name} + ' - ' + ${#numbers.formatCurrency(promotion?.discount)} + ' discount'"															
+															th:href="'/getPromId?clientId=' + ${session.cliByAcc?.getCli_id()}">
+															
+													</option>
+												</select>
+													
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="creat_account">
+										<input type="checkbox" th:checked="${pay?.terms}" id="f-option4" name="terms">
+										<label for="f-option4">Chấp nhận <a href="#">điều
+												khoản</a> của chúng tôi
+										</label>
+										<p class="text-danger" th:if='${error?.getFieldError("terms") != null}' th:text='${error?.getFieldError("terms")?.getDefaultMessage()}'></p>
+									</div>
+									<button class="primary-btn btn-block border-0" type="submit">Đặt hàng</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!--================End Checkout Area =================-->
+
+	</div>
+</body>
+
+</html>

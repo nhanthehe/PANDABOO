@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	class="no-js">
+
+<body>
+	<!-------sidebar--design------------>
+	<div id="sidebar" th:fragment="sidebar">
+		<div class="sidebar-header">
+			<h3>
+				<img th:src="@{/images/img/logo3.png}" class="img-fluid" />
+			</h3>
+		</div>
+		<ul class="list-unstyled component m-0">
+			<li class="">
+				<a href="/statistical" class="dashboard"> 
+					<span class="lnr lnr-home"></span>Trang chủ
+				</a>
+			</li>
+
+			<li class="dropdown ">
+				<a href="#homeSubmenu1" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+					<span class="lnr lnr-gift"></span>Sản phẩm
+				</a>
+				<ul class="collapse list-unstyled menu" id="homeSubmenu1">
+					<li><a href="/productsDetail">Quản lý sản phẩm</a></li>
+					<li><a href="/products">Danh sách sản phẩm</a></li>
+					<li><a href="/add-promotion">Quản lý khuyến mãi</a></li>
+					<li><a href="/promotion">Danh sách khuyến mãi</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a href="/payments" class="">
+						<span class="lnr lnr-list"></span>Danh sách đơn hàng
+				</a>
+			</li>
+			<li class="dropdown">
+				<a href="/client_list" class="">
+						<span class="lnr lnr-user"></span>Danh sách khách hàng
+				</a>
+			</li>
+		</ul>
+	</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layout}">
+<body>
+	<div layout:fragment="mainView">
+	<!-- Start Banner Area -->
+	<section class="banner-area organic-breadcrumb">
+		<div class="container">
+			<div
+				class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+				<div class="col-first">
+					<h1>Giỏ hàng</h1>
+					<nav class="d-flex align-items-center">
+						<a href="/pandaBooIndex">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
+						<a href="#">Cửa hàng<span class="lnr lnr-arrow-right"></span></a>
+						<a href="/cart">Giỏ hàng</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Banner Area -->
+
+	<!--================Cart Area =================-->
+	<section class="ftco-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<h3 class="h5 mb-4 text-center"></h3>
+					<div class="table-wrap">
+						<table class="table-cart">
+							<thead class="thead-primary">
+								<tr>
+									<!-- <th>&nbsp;</th> -->
+									<th>&nbsp;</th>
+									<th>Sản phẩm</th>
+									<th>Đơn giá</th>
+									<th>Số lượng</th>
+									<th>Thành tiền</th>
+									<th>&nbsp;</th>
+								</tr>
+							</thead>
+							<tbody >
+								<tr class="alert" role="alert" th:each="item : ${cart?.getCartList(session.cliByAcc?.getCli_id())}">
+									<!-- <td><label class="checkbox-wrap checkbox-primary">
+											<input type="checkbox" checked> <span
+											class="checkmark"></span>
+									</label></td> -->
+									<td><img class="img" alt="" th:src="'/images/' + ${item?.paydetailProductEntity?.images?.get(0).getName()}">
+									</td>
+									<td>
+										<div class="email">
+											<span th:text="${item?.paydetailProductEntity?.prod_name}">Túi tự đan có dây đeo chéo phối nơ xinh</span>
+										</div>
+									</td>
+									<td th:text="${#numbers.formatCurrency(item?.paydetailProductEntity?.red_price)}">190.000đ</td>
+									<td class="quantity">
+										<div class="product_count mt-4">
+											<input th:value="${item?.quantity}" type="text" name="qty" id="sst"
+												value="1" title="Quantity:" class="input-text qty">
+											<a class="increase items-count mr-2" type="button"
+												th:href="@{'/update-shopping-cart?id='+${item?.paydetailProductEntity?.prod_id} + '&quantity=' + ${item?.quantity+1} + '&clientId=' + ${session.cliByAcc?.getCli_id()}}"> <i
+												class="lnr lnr-chevron-up"></i>
+											</a> 
+											<a class="reduced items-count mr-2" type="button" 
+												th:href="@{'/update-shopping-cart?id='+${item?.paydetailProductEntity?.prod_id} + '&quantity=' + ${item?.quantity-1} + '&clientId=' + ${session.cliByAcc?.getCli_id()}}"> <i
+												class="lnr lnr-chevron-down"></i>
+											</a>
+										</div>
+									</td>
+									<td th:text="${#numbers.formatCurrency(item?.quantity * item?.paydetailProductEntity?.red_price)}">thanhtien</td>
+									<td>
+										<a th:href="@{'/remove-cart?id=' + ${item?.paydetailProductEntity?.prod_id} + '&clientId=' + ${session.cliByAcc?.getCli_id()}}" type="button" class="close" >
+											<span aria-hidden="true"><i class="fa fa-close"></i></span>
+										</a>
+									</td>
+								</tr>	
+					
+								<tr>
+									<td><a th:href="@{'/clear-cart?clientId=' + ${session.cliByAcc?.getCli_id()}}" type="button" class="clear" >Xóa tất cả</a></td>
+									<td></td>
+									<td></td>
+									<td><span>Tổng thanh toán</span></td>
+									<td>
+										<h5 th:text="${#numbers.formatCurrency(cart?.getAmount(session.cliByAcc?.getCli_id())?:0)}" >204.900đ</h5>
+									</td>
+									<td>										
+										<a class="primary-btn" th:href="@{'/checkout?clientId=' + ${session.cliByAcc?.getCli_id()}}">Mua</a>
+									</td>
+								</tr>							
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--================End Cart Area =================-->
+
+	</div>
+</body>
+
+</html>

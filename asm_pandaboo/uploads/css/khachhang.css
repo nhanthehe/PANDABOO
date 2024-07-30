@@ -1,0 +1,153 @@
+/* Reset CSS */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa; /* Màu nền tổng thể */
+}
+
+
+.ad {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ad h2 {
+    color: #ff6f61; /* Màu cam */
+    margin-bottom: 20px;
+}
+
+.ad .search-input {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.ad .search-input input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 70%;
+    margin-right: 10px;
+}
+
+.ad .search-input button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #343a40; /* Màu nền nút */
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.ad .search-input button:hover {
+    background-color: #555; /* Màu nền nút khi hover */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+
+
+/* khachhang.css */
+
+/* Search input styling */
+.search-input {
+    margin-bottom: 20px;
+    display: flex;
+    
+    align-items: center;
+}
+  .custom-btn {
+        width: 150px; /* Ensure all buttons have equal width */
+        background-color: orange; /* Orange background color */
+        color: white; /* Text color */
+        border: none; /* Remove default border */
+        padding: 15px; /* Adjust padding as needed */
+        cursor: pointer; /* Change cursor on hover */
+    }
+
+    .custom-btn:hover {
+        background-color: darkorange; /* Darker orange on hover */
+    }
+.search-input input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-input button {
+    padding: 10px 20px;
+    background-color: orange; /* Orange color */
+    border: none;
+    border-radius: 0 5px 5px 0;
+    color: orange;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.search-input button:hover {
+    background-color: orange; /* Darker shade of orange on hover */
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th{
+	   padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    background-color: orange;
+}
+table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #ff8c00; /* Orange color for table header */
+    color: #fff;
+}
+
+table td button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    background-color: #dc3545; /* Red color */
+    border: none;
+    border-radius: 3px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+table td button:hover {
+    background-color: #c82333; /* Darker shade of red on hover */
+}
+

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	layout:decorate="~{layout}">
+<body>
+	<div layout:fragment="mainView">
+
+		<!-- start banner Area -->
+		<section class="banner-area">
+			<div class="container">
+				<div class="row fullscreen align-items-center justify-content-start">
+					<div class="col-lg-12">
+						<div class="active-banner-slider owl-carousel">
+							<!-- single-slide -->
+							<div class="row single-slide align-items-center d-flex">
+								<div class="col-lg-5 col-md-6">
+									<div class="banner-content">
+										<h1>
+											Website bán đồ <br>Handmade!
+										</h1>
+										<p>Chúng tôi cung cấp trang web dành cho các sản phẩm tự
+											làm, các đồ thủ công mỹ nghệ.</p>
+										<div th:if="${session.acc == null}" class="add-bag d-flex align-items-center">
+											<a class="add-btn" href="/login"><span
+												class="lnr lnr-cross"></span></a> <span
+												class="add-text text-uppercase">ĐĂNG NHẬP!</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-7">
+									<div class="banner-img">
+										<img class="img-fluid rounded-circle"
+											th:src="@{/images/img/banner/banner1.png}" alt="">
+									</div>
+								</div>
+							</div>
+							<!-- single-slide -->
+							<div class="row single-slide align-items-center d-flex">
+								<div class="col-lg-5 col-md-6">
+									<div class="banner-content">
+										<h1>
+											Website bán đồ <br>Handmade!
+										</h1>
+										<p>Chúng tôi cung cấp trang web dành cho các sản phẩm tự
+											làm, các đồ thủ công mỹ nghệ.</p>
+										<div th:if="${session.acc == null}" class="add-bag d-flex align-items-center">
+											<a class="add-btn" href="/login"><span
+												class="lnr lnr-cross"></span></a> <span
+												class="add-text text-uppercase">ĐĂNG NHẬP!</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-7">
+									<div class="banner-img">
+										<img class="img-fluid"
+											th:src="@{/images/img/banner/banner2.png}" alt="">
+									</div>
+								</div>
+							</div>
+							<!-- single-slide -->
+							<div class="row single-slide align-items-center d-flex">
+								<div class="col-lg-5 col-md-6">
+									<div class="banner-content">
+										<h1>
+											Website bán đồ <br>Handmade!
+										</h1>
+										<p>Chúng tôi cung cấp trang web dành cho các sản phẩm tự
+											làm, các đồ thủ công mỹ nghệ.</p>
+										<div th:if="${session.acc == null}" class="add-bag d-flex align-items-center">
+											<a class="add-btn" href="/login"><span
+												class="lnr lnr-cross"></span></a> <span
+												class="add-text text-uppercase">ĐĂNG NHẬP!</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-7">
+									<div class="banner-img">
+										<img class="img-fluid"
+											th:src="@{/images/img/banner/banner4.png}" alt="">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End banner Area -->
+
+		<!-- start features Area -->
+		<section class="features-area section_gap">
+			<div class="container">
+				<div class="row features-inner">
+					<!-- single features -->
+					<div class="col-lg-3 col-md-6 col-sm-6">
+						<div class="single-features">
+							<div class="f-icon">
+								<img th:src="@{/images/img/features/f-icon1.png}" alt="">
+							</div>
+							<h6>Giao hàng miễn phí</h6>
+							<p>Miễn phí vận chuyển cho mọi đơn hàng</p>
+						</div>
+					</div>
+					<!-- single features -->
+					<div class="col-lg-3 col-md-6 col-sm-6">
+						<div class="single-features">
+							<div class="f-icon">
+								<img th:src="@{/images/img/features/f-icon2.png}" alt="">
+							</div>
+							<h6>Chính sách hoàn trả</h6>
+							<p>Đổi trả hàng miễn phí</p>
+						</div>
+					</div>
+					<!-- single features -->
+					<div class="col-lg-3 col-md-6 col-sm-6">
+						<div class="single-features">
+							<div class="f-icon">
+								<img th:src="@{/images/img/features/f-icon3.png}" alt="">
+							</div>
+							<h6>Hỗ trợ 24/7</h6>
+							<p>Nhân viên tư vấn hỗ trợ mọi lúc</p>
+						</div>
+					</div>
+					<!-- single features -->
+					<div class="col-lg-3 col-md-6 col-sm-6">
+						<div class="single-features">
+							<div class="f-icon">
+								<img th:src="@{/images/img/features/f-icon4.png}" alt="">
+							</div>
+							<h6>Thanh toán an toàn</h6>
+							<p>Có nhiều phương thức thanh toán</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- end features Area -->
+
+		<!-- Start category Area -->
+		<section class="category-area">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-8 col-md-12">
+						<div class="row">
+							<div class="col-lg-8 col-md-8">
+								<div class="single-deal">
+									<div class="overlay"></div>
+									<img class="img-fluid w-100"
+										th:src="@{/images/img/category/c6.jpg}" alt=""> 
+									<a th:href="@{/images/img/category/c6.jpg}" class="img-pop-up"
+										target="_blank">
+										<div class="deal-details">
+											<h6 class="deal-title">Quà tặng dễ thương</h6>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div class="col-lg-4 col-md-4">
+								<div class="single-deal">
+									<div class="overlay"></div>
+									<img class="img-fluid w-100"
+										th:src="@{/images/img/category/c8.jpeg}" alt=""> <a
+										th:href="@{/images/img/category/c8.jpeg}" class="img-pop-up"
+										target="_blank">
+										<div class="deal-details">
+											<h6 class="deal-title">Đồ thủ công, mỹ nghệ</h6>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div class="col-lg-4 col-md-4">
+								<div class="single-deal">
+									<div class="overlay"></div>
+									<img class="img-fluid w-100"
+										th:src="@{/images/img/category/c9.jpg}" alt=""> <a
+										th:href="@{/images/img/category/c9.jpg}" class="img-pop-up"
+										target="_blank">
+										<div class="deal-details">
+											<h6 class="deal-title">Sản phẩm hottrend</h6>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div class="col-lg-8 col-md-8">
+								<div class="single-deal">
+									<div class="overlay"></div>
+									<img class="img-fluid w-100"
+										th:src="@{/images/img/category/c7.jpg}" alt=""> <a
+										th:href="@{/images/img/category/c7.jpg}" class="img-pop-up"
+										target="_blank">
+										<div class="deal-details">
+											<h6 class="deal-title">Thiết kế theo sở thích</h6>
+										</div>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-6">
+						<div class="single-deal">
+							<div class="overlay"></div>
+							<img class="img-fluid w-100"
+								th:src="@{/images/img/category/c5.jpg}" alt=""> <a
+								th:href="@{/images/img/category/c5.jpg}" class="img-pop-up"
+								target="_blank">
+								<div class="deal-details">
+									<h6 class="deal-title">Siêu sales</h6>
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- End category Area -->
+
+		<!-- start product Area -->
+		<section class="owl-carousel active-product-area section_gap">
+			<!-- single product slide -->
+			<div class="single-product-slider">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-6 text-center">
+							<div class="section-title">
+								<h1>Sản phẩm mới</h1>
+								<p>Luôn luôn cập nhật các mẫu mới nhất.</p>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<!-- single product -->
+						<div class="col-lg-3 col-md-6" th:each="prod : ${products}">
+							<div class="single-product" >
+								<img class="img-fluid" th:src="'/images/'+${prod?.images?.get(0)?.getName()}"
+									alt="">
+								<div class="product-details">
+									<h6 th:text="${prod?.prod_name}">Kẽm nhung loại 1 (100 cây/bó)</h6>
+									<div class="price">
+										<h6 th:text="${#numbers.formatCurrency(prod?.red_price)}">22.000đ</h6>
+										<h6 class="l-through" th:text="${#numbers.formatCurrency(prod?.price)}">30.000đ</h6>
+									</div>
+									<div class="prd-bottom">
+
+										<a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id}+ '&clientId=' + ${session.cliByAcc?.getCli_id()} + '&path=' + ${path}}" class="social-info"> <span class="ti-bag"></span>
+											<p class="hover-text">Thêm vào giỏ</p>
+										</a> 
+										
+										<a th:href="'/singleProduct?id=' +${prod?.prod_id}" class="social-info"> <span
+											class="lnr lnr-move"></span>
+											<p class="hover-text">Xem thêm</p>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- single product slide -->
+			<div class="single-product-slider">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-6 text-center">
+							<div class="section-title">
+								<h1>Sản phẩm bán chạy</h1>
+								<p></p>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<!-- single product -->
+						<div class="col-lg-3 col-md-6" th:each="prod : ${products}">
+							<div class="single-product" >
+								<img class="img-fluid" th:src="'/images/'+${prod?.images?.get(0)?.getName()}"
+									alt="">
+								<div class="product-details">
+									<h6 th:text="${prod?.prod_name}">Kẽm nhung loại 1 (100 cây/bó)</h6>
+									<div class="price">
+										<h6 th:text="${#numbers.formatCurrency(prod?.red_price)}">22.000đ</h6>
+										<h6 class="l-through" th:text="${#numbers.formatCurrency(prod?.price)}">30.000đ</h6>
+									</div>
+									<div class="prd-bottom">
+
+										<a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id}+ '&clientId=' + ${session.cliByAcc?.getCli_id()} + '&path=' + ${path}}" class="social-info"> <span class="ti-bag"></span>
+											<p class="hover-text">Thêm vào giỏ</p>
+										</a> <a href="" class="social-info"> <span
+											class="lnr lnr-star"></span>
+											<p class="hover-text">4.4</p>
+										</a> <a href="" class="social-info"> <span
+											class="lnr lnr-store"></span>
+											<p class="hover-text">Đã bán 1.5M</p>
+										</a> <a th:href="'/singleProduct?id=' +${prod?.prod_id}" class="social-info"> <span
+											class="lnr lnr-move"></span>
+											<p class="hover-text">Xem thêm</p>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- end product Area -->
+	</div>
+</body>
+
+</html>

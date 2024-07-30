@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
+	class="no-js">
+
+<body>
+	<div class="top-navbar" th:fragment="nav">
+		<div class="xd-topbar">
+			<div class="row">
+				<div
+					class="col-2 col-md-1 col-lg-1 order-2 order-md-1 align-self-center">
+					<div class="xp-menubar">
+						<span class="material-icons text-white">signal_cellular_alt</span>
+					</div>
+				</div>
+
+				<div class="col-md-5 col-lg-3 order-3 order-md-2">
+					<div class="xp-searchbar">
+						<!-- <form>
+							<div class="input-group">
+								<input type="search" name="search" class="form-control" placeholder="Search">
+								<div class="input-group-append">
+									<button class="btn search-btn" type="submit" id="button-addon2">
+										<span class="lnr lnr-magnifier" id="search"></span>
+									</button>
+								</div>
+							</div>
+						</form> -->
+					</div>
+				</div>
+
+				<div class="col-10 col-md-6 col-lg-8 order-1 order-md-3">
+					<div class="xp-profilebar text-right">
+						<nav class="navbar p-0">
+							<ul class="nav navbar-nav flex-row ml-auto">
+								<li><a th:text="${session.acc?.getFullname()}"> </a></li>
+								<li class="dropdown nav-item"><a class="nav-link" href="#"
+									data-toggle="dropdown"> <img th:src="'/images/' + ${session.acc?.getAvatar()}"
+										style="width: 30px ; border-radius: 65%" />
+								</a>
+									<ul class="dropdown-menu small-menu">
+										<li><a href="/register" th:if="${session.acc == null}"> <span
+												class="fa fa-registered"></span> Đăng ký
+										</a></li>
+										<li><a href="/login" th:if="${session.acc == null}"> <span class="fa fa-sign-in"></span>
+												Đăng nhập
+										</a></li>
+										<li><a href="/logout"> <span class="fa fa-sign-out"></span>
+												Đăng xuất
+										</a></li>
+
+									</ul></li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
