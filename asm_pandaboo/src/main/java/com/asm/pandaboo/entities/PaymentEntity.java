@@ -54,7 +54,7 @@ public class PaymentEntity implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "cli_id")
 	@JsonBackReference
-	private ClientEntity clientPaymentsEntity;
+	private AddressEntity addressPaymentsEntity;
 
 	@ManyToOne
 	@JoinColumn(name = "prom_id")

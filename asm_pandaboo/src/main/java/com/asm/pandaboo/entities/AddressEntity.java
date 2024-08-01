@@ -13,15 +13,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "clients")
-public class ClientEntity implements Serializable {
+@Table(name = "address")
+public class AddressEntity implements Serializable {
 
     /**
 	 * 
@@ -30,14 +29,8 @@ public class ClientEntity implements Serializable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cli_id")
-    private int cli_id;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "phone")
-    private String phone;
+    @Column(name = "add_id")
+    private int add_id;
 
     @Column(name = "road")
     private String road;
@@ -58,10 +51,10 @@ public class ClientEntity implements Serializable {
     @JoinColumn(name = "acc_id", referencedColumnName = "acc_id")
     private AccountEntity accountEntity;
    	
-   	@OneToOne(mappedBy = "clientEntity", cascade = CascadeType.ALL)
+   	@OneToOne(mappedBy = "addressEntity", cascade = CascadeType.ALL)
    	private ShoppingCartEntity carts;
    	
-   	@OneToMany(mappedBy = "clientPaymentsEntity")
-	private List<PaymentEntity> paymentsClientEntity;
+   	@OneToMany(mappedBy = "addressPaymentsEntity")
+	private List<PaymentEntity> paymentsAddressEntity;
 
 }

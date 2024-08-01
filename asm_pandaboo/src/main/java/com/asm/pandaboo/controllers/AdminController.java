@@ -1,9 +1,18 @@
 package com.asm.pandaboo.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
+import com.asm.pandaboo.entities.*;
+import com.asm.pandaboo.jpa.*;
+import com.asm.pandaboo.models.AccountBean;
+import com.asm.pandaboo.models.ProductBean;
+import com.asm.pandaboo.models.PromotionBean;
+import com.asm.pandaboo.services.UploadFile;
+import com.asm.pandaboo.utils.Contants;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,88 +20,63 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.asm.pandaboo.entities.AccountEntity;
-import com.asm.pandaboo.entities.CategoryEntity;
-import com.asm.pandaboo.entities.ClientEntity;
-import com.asm.pandaboo.entities.ImageEntity;
-import com.asm.pandaboo.entities.PaymentDetailEntity;
-import com.asm.pandaboo.entities.PaymentEntity;
-import com.asm.pandaboo.entities.ProductEntity;
-import com.asm.pandaboo.entities.PromotionEntity;
-import com.asm.pandaboo.entities.ShoppingCartEntity;
-import com.asm.pandaboo.entities.UnitEntity;
-import com.asm.pandaboo.jpa.AccountsJPA;
-import com.asm.pandaboo.jpa.CategoryJPA;
-import com.asm.pandaboo.jpa.ClientJPA;
-import com.asm.pandaboo.jpa.ImageJPA;
-import com.asm.pandaboo.jpa.PaymentDetailJPA;
-import com.asm.pandaboo.jpa.PaymentJPA;
-import com.asm.pandaboo.jpa.ProductJPA;
-import com.asm.pandaboo.jpa.PromotionJPA;
-import com.asm.pandaboo.jpa.ShoppingCartJPA;
-import com.asm.pandaboo.jpa.UnitJPA;
-import com.asm.pandaboo.models.AccountBean;
-import com.asm.pandaboo.models.ProductBean;
-import com.asm.pandaboo.models.PromotionBean;
-import com.asm.pandaboo.services.UploadFile;
-import com.asm.pandaboo.utils.Contants;
-
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class AdminController {
-	@Autowired
-	AccountsJPA accountJPA;
+    @Autowired
+    AccountsJPA accountJPA;
 
 	@Autowired
-	CategoryJPA categoryJPA;
+	RoleJPA roleJPA;
 
 	@Autowired
-	UnitJPA unitJPA;
+	RoleAccountJPA roleAccountJPA;
 
-	@Autowired
-	ProductJPA productJPA;
+    @Autowired
+    CategoryJPA categoryJPA;
 
-	@Autowired
-	PaymentJPA paymentJPA;
+    @Autowired
+    UnitJPA unitJPA;
 
-	@Autowired
-	PaymentDetailJPA paymentDetailJPA;
+    @Autowired
+    ProductJPA productJPA;
 
-	@Autowired
-	PromotionJPA promotionJPA;
+    @Autowired
+    PaymentJPA paymentJPA;
 
-	@Autowired
-	ImageJPA imageJPA;
+    @Autowired
+    PaymentDetailJPA paymentDetailJPA;
 
-	@Autowired
-	ClientJPA clientJPA;
+    @Autowired
+    PromotionJPA promotionJPA;
 
-	@Autowired
-	ShoppingCartJPA shoppingCartJPA;
+    @Autowired
+    ImageJPA imageJPA;
 
-	@Autowired
-	UploadFile uploadFile;
+    @Autowired
+    ClientJPA clientJPA;
 
-	@Autowired
-	HttpServletResponse response;
+    @Autowired
+    ShoppingCartJPA shoppingCartJPA;
 
-	@Autowired
-	HttpServletRequest request;
+    @Autowired
+    UploadFile uploadFile;
 
-	@Autowired
-	HttpSession session;
+    @Autowired
+    HttpServletResponse response;
+
+    @Autowired
+    HttpServletRequest request;
+
+    @Autowired
+    HttpSession session;
 
 	@GetMapping("/statistical")
 	public String statistic(Model model) {
@@ -126,10 +110,10 @@ public class AdminController {
 		return "seller/chart";
 	}
 
-	@GetMapping("/register")
-	public String register() {
-		return "admin/register";
-	}
+    @GetMapping("/register")
+    public String register() {
+        return "admin/register";
+    }
 
 	@GetMapping("/forgotPass")
 	public String ForgotPassword() {
@@ -175,67 +159,69 @@ public class AdminController {
 	}
 
 	@PostMapping("/login")
-	public String loginCheck(@RequestParam("path") String path, @RequestParam("username") String username,
-			@RequestParam("password") String password, Model model) {
+	public String loginCheck(@RequestParam("path") String path,
+							 @RequestParam("username") String username,
+							 @RequestParam("password") String password,
+							 Model model,
+							 HttpServletResponse response,
+							 HttpSession session) {
+
 		AccountEntity acc = accountJPA.getAccountsEntityByAcc(username);
+
 		if (acc == null || !password.equals(acc.getPassword())) {
-			System.out.println("Đăng nhập thất bại!");
-			System.out.println(acc);
+			System.out.println("Login failed!");
+			model.addAttribute("path", path);
+			return "admin/login";
 		} else {
 			Cookie name = new Cookie(Contants.COOKIE_UERNAME, username);
 			response.addCookie(name);
-			System.out.println("Đăng nhập thành công!");
+			System.out.println("Login successful!");
 			model.addAttribute("acc", acc);
 			session.setAttribute("acc", acc);
-			System.out.println(acc);
-			ClientEntity cliByAcc = clientJPA.getClientByAccID(acc.getAcc_id());
-			session.setAttribute("cliByAcc", cliByAcc);
-			model.addAttribute("cliByAcc", cliByAcc);
-			System.out.println(cliByAcc);
-			if (acc.isRoles() == true) {
-				if (!path.equals("")) {
-					if (path.equals("/statistical") || path.equals("/") || path.equals("/changePass")
-							|| path.equals("/checkout") || path.equals("/promotionDetail") || path.equals("/promotion")
-							|| path.equals("/productsDetail") || path.equals("/products") || path.equals("/profile")) {
-						System.out.println(path);
-						return String.format("redirect:%s", path);
-					} else {
-						System.out.println(path);
-						return "redirect:/statistical";
-					}
-				} else {
-					System.out.println(path);
-					return "redirect:/statistical";
-				}
-			} else {
-				if (!path.equals("")) {
-					if (path.equals("/singleProduct") || path.equals("/confirmation") || path.equals("/checkout")
-							|| path.equals("/category") || path.equals("/cart")) {
-						System.out.println(path);
-						return String.format("redirect:%s", path);
-					} else {
-						System.out.println(path);
-						return "redirect:/pandaBooIndex";
-					}
-				} else {
-					System.out.println(path);
-					return "redirect:/pandaBooIndex";
-				}
+			session.setAttribute("cliByAcc", acc);
+			model.addAttribute("cliByAcc", acc);
 
+			for (RoleAccountEntity roleAcc : acc.getAccRoleAccounts()) {
+				String roleName = roleAcc.getRoleAccountRoleEntity().getRole_name().toLowerCase();
+				if ("superAdmin".equals(roleName)) {
+					return handleRedirect(path, "/statistical", Arrays.asList(
+							"/statistical", "/", "/changePass", "/checkout", "/promotionDetail",
+							"/promotion", "/productsDetail", "/products", "/profile"));
+				} else if ("admin".equals(roleName)) {
+					return handleRedirect(path, "/products", Arrays.asList(
+							"/", "/changePass", "/checkout", "/promotionDetail", "/promotion",
+							"/productsDetail", "/products", "/profile"));
+				} else if ("client".equals(roleName)) {
+					return handleRedirect(path, "/pandaBooIndex", Arrays.asList(
+							"/singleProduct", "/confirmation", "/checkout", "/category", "/cart"));
+				}
 			}
 		}
+
 		model.addAttribute("path", path);
 		return "admin/login";
 	}
 
-	@PostMapping("/register")
-	public String saveRegister(@Valid @ModelAttribute("account") AccountBean accountBean, BindingResult error,
-			Model model, @RequestParam("avatar") MultipartFile file,
-			@RequestParam("confirm_password") String confirm_password) {
-		AccountEntity entity = new AccountEntity();
-		ClientEntity cliEntity = new ClientEntity();
-		ShoppingCartEntity cartEntity = new ShoppingCartEntity();
-		String fileName = uploadFile.Upload(file);
+	private String handleRedirect(String path, String defaultPath, List<String> validPaths) {
+		if (!path.isEmpty() && validPaths.contains(path)) {
+			return "redirect:" + path;
+		}
+		return "redirect:" + defaultPath;
+	}
+
+
+    @PostMapping("/register")
+    public String saveRegister(
+			@Valid AccountBean accountBean,
+			BindingResult error,
+//            @RequestBody AccountEntity accountEntity,
+			Model model,
+            @RequestParam("avatar") MultipartFile file,
+			@RequestParam("confirm_password") String confirm_password
+    ) {
+		AccountEntity accountEntity = new AccountEntity();
+
+        String fileName = uploadFile.Upload(file);
 		if (error.hasErrors()) {
 			model.addAttribute("error", error);
 		}
@@ -244,39 +230,34 @@ public class AdminController {
 		} else if (!confirm_password.equalsIgnoreCase(accountBean.getPassword())) {
 			model.addAttribute("confirm", "Mật khẩu xác nhận phải giống với mật khẩu!");
 		} else {
-			if (fileName != null) {
-				model.addAttribute("image", fileName);
-				entity.setUsername(accountBean.getUsername());
-				entity.setPassword(accountBean.getPassword());
-				entity.setFullname(accountBean.getFullname());
-				entity.setAvatar(fileName);
-				entity.setRoles(false);
-				entity.setStatus(true);
-				System.out.println("Đăng nhập thành công!");
-				accountJPA.save(entity);
-				cliEntity.setEmail("");
-				cliEntity.setPhone("");
-				cliEntity.setRoad("");
-				cliEntity.setWard("");
-				cliEntity.setDistrict("");
-				cliEntity.setCity("");
-				cliEntity.setAccountEntity(entity);
-				cliEntity.setStatus(true);
-				clientJPA.save(cliEntity);
-				cartEntity.setClientEntity(cliEntity);
-				shoppingCartJPA.save(cartEntity);
-				return "redirect:/login";
-			} else {
-				model.addAttribute("NotImage", "Ảnh đại diện không được để trống!");
+        if (fileName != null) {
+			accountEntity.setUsername(accountBean.getUsername());
+			accountEntity.setPassword(accountBean.getPassword());
+			accountEntity.setFullname(accountBean.getFullname());
+			accountEntity.setPhone(accountBean.getPhone());
+			accountEntity.setEmail(accountBean.getEmail());
+			accountEntity.setAvatar(fileName);
+			accountEntity.setStatus(true);
+			accountJPA.save(accountEntity);
+
+			RoleAccountEntity roleAccount = new RoleAccountEntity();
+			for(RoleEntity role : roleJPA.findAll()){
+				if(role.getRole_name().equalsIgnoreCase("client")){
+					RoleEntity roleEntity = roleJPA.getRoleByName("client");
+					roleAccount.setRoleAccountAccEntity(accountEntity);
+					roleAccount.setRoleAccountRoleEntity(roleEntity);
+					roleAccountJPA.save(roleAccount);
+				}
 			}
+        }
 		}
-		model.addAttribute("acc", accountBean);
-		return "admin/register";
-	}
+
+		return "admin/login";
+    }
 
 	@GetMapping("/client_list")
 	public String client(Model model) {
-		List<ClientEntity> clients = clientJPA.findAll();
+		List<AddressEntity> clients = clientJPA.findAll();
 		System.out.println("Fetched clients: " + clients);
 		model.addAttribute("clients", clients);
 		return "seller/client_list";
@@ -341,8 +322,8 @@ public class AdminController {
 
 	@PostMapping("/productsDetail")
 	public String saveProductsDetail(@Valid ProductBean productBean, BindingResult error,
-			@RequestParam("red_price") String red_price, @RequestParam("images") ArrayList<MultipartFile> file,
-			Model model) {
+									 @RequestParam("red_price") String red_price, @RequestParam("images") ArrayList<MultipartFile> file,
+									 Model model) {
 		ProductEntity productEntity = new ProductEntity();
 		Optional<CategoryEntity> catOptional = categoryJPA.findById(String.valueOf(productBean.getCat_id()));
 		Optional<UnitEntity> unitOptional = unitJPA.findById(String.valueOf(productBean.getUnit_id()));
@@ -632,42 +613,42 @@ public class AdminController {
 		return "redirect:/removedProducts";
 	}
 
-	// -----------------------------------Model
-	// Attribute------------------------------------
+    // -----------------------------------Model
+    // Attribute------------------------------------
 
-	@ModelAttribute("products")
-	public List<ProductEntity> Product() {
-		return productJPA.findAll();
-	}
+    @ModelAttribute("products")
+    public List<ProductEntity> Product() {
+        return productJPA.findAll();
+    }
 
-	@ModelAttribute("categorys")
-	public List<CategoryEntity> Category() {
-		return categoryJPA.findAll();
-	}
+    @ModelAttribute("categorys")
+    public List<CategoryEntity> Category() {
+        return categoryJPA.findAll();
+    }
 
-	@ModelAttribute("units")
-	public List<UnitEntity> Unit() {
-		return unitJPA.findAll();
-	}
+    @ModelAttribute("units")
+    public List<UnitEntity> Unit() {
+        return unitJPA.findAll();
+    }
 
-	@ModelAttribute("images")
-	public List<ImageEntity> getImages() {
-		return imageJPA.findAll();
-	}
+    @ModelAttribute("images")
+    public List<ImageEntity> getImages() {
+        return imageJPA.findAll();
+    }
 
-	@ModelAttribute("accounts")
-	public List<AccountEntity> getAccounts() {
-		return accountJPA.findAll();
-	}
+    @ModelAttribute("accounts")
+    public List<AccountEntity> getAccounts() {
+        return accountJPA.findAll();
+    }
 
-	@ModelAttribute("promotions")
-	public List<PromotionEntity> getPromotionEntities() {
-		return promotionJPA.findAll();
-	}
+    @ModelAttribute("promotions")
+    public List<PromotionEntity> getPromotionEntities() {
+        return promotionJPA.findAll();
+    }
 
-	@ModelAttribute("payments")
-	public List<PaymentEntity> getPaymentEntities() {
-		return paymentJPA.findAll();
-	}
+    @ModelAttribute("payments")
+    public List<PaymentEntity> getPaymentEntities() {
+        return paymentJPA.findAll();
+    }
 
 }

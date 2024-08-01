@@ -36,12 +36,12 @@ public class ProductService {
 		return null;
 	}
 	
-	public ShoppingCartEntity getCartByClientId(int cliID) {
-		ShoppingCartEntity cart = this.getShoppingCarts(cliID);
-		if(cart.getClientEntity().getCli_id() == cliID) {
+	public ShoppingCartEntity getCartByAccId(int addId) {
+		ShoppingCartEntity cart = this.getShoppingCarts(addId);
+		if(cart.getAddressEntity().getAdd_id() == addId) {
 			return cart;
 		}else {
 			return null;
-		}		
+		}
 	}
 }

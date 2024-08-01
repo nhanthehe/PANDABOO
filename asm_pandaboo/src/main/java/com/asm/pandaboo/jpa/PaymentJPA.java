@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 import com.asm.pandaboo.entities.PaymentEntity;
 
 public interface PaymentJPA extends JpaRepository<PaymentEntity, String> {
-	@Query(value = "select * from payments where cli_id=:cliId",nativeQuery = true)
+	@Query(value = "select * from payments where acc_id=:cliId",nativeQuery = true)
 	public PaymentEntity getPaymentByClientID(@Param("cliId") int cliId);
 	
-	@Query(value = "select * from payments where cli_id=:cliId",nativeQuery = true)
+	@Query(value = "select * from payments where acc_id=:cliId",nativeQuery = true)
 	public List<PaymentEntity> getListPaymentByClientID(@Param("cliId") int cliId);
 	
 	@Query(value = "SELECT SUM(order_total) FROM payments WHERE status = 2", nativeQuery = true)
@@ -22,7 +22,7 @@ public interface PaymentJPA extends JpaRepository<PaymentEntity, String> {
 			+ "WHERE p.status = 2", nativeQuery = true)
     public Integer getSoldAll();
 	
-	@Query(value = "select COUNT(DISTINCT c.cli_id) from payments p INNER JOIN clients c ON p.cli_id = c.cli_id WHERE p.status = 2", nativeQuery = true)
+	@Query(value = "select COUNT(DISTINCT acc.acc_id) from payments p INNER JOIN accounts acc ON p.acc_id = acc.acc_id WHERE p.status = 2", nativeQuery = true)
 	public Integer getCliAll();
 	
 	@Query(value = "SELECT TOP 3 pd.prod_name, SUM(pd.prod_quantity * pd.red_price) AS total, SUM(prod_quantity) AS countProd FROM paymentdetails pd "

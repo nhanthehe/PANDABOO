@@ -1,5 +1,6 @@
 package com.asm.pandaboo.models;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,11 +20,14 @@ public class AccountBean {
     
     @NotBlank(message = "Họ và tên không được để trống")
     private String fullname;
+
+    private String phone;
+
+    private String email;
     
     @NotNull(message = "Ảnh đại diện không được để trống")
     private String avatar;
-    
-    private boolean roles;
+
     
     private boolean status;
 

@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.asm.pandaboo.entities.AccountEntity;
 import com.asm.pandaboo.entities.CategoryEntity;
-import com.asm.pandaboo.entities.ClientEntity;
+import com.asm.pandaboo.entities.AddressEntity;
 import com.asm.pandaboo.entities.ImageEntity;
 import com.asm.pandaboo.entities.PayDetailEntity;
 import com.asm.pandaboo.entities.PaymentDetailEntity;
@@ -44,11 +44,9 @@ import com.asm.pandaboo.jpa.ShoppingCartJPA;
 import com.asm.pandaboo.jpa.UnitJPA;
 import com.asm.pandaboo.models.ClientBean;
 import com.asm.pandaboo.models.PaymentBean;
-import com.asm.pandaboo.models.ProductBean;
 import com.asm.pandaboo.services.UploadFile;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -114,7 +112,7 @@ public class ClientController {
 //		payService.add(id, cliId);
 //		return String.format("redirect:%s", path);
 //	}
-	
+
 	@GetMapping("/add-to-cart")
 	public String updateCart(@RequestParam("id") int id,
 	                         @RequestParam("clientId") int cliId,
@@ -124,7 +122,7 @@ public class ClientController {
 	                         @RequestParam(name = "size", required = false) Integer size,
 	                         Model model) {
 	    payService.add(id, cliId);
-	    
+
 	    if (page != null && size != null) {
 	        return String.format("redirect:/category?page=%d&size=%d", page, size);
 	    } else {
@@ -167,7 +165,7 @@ public class ClientController {
 		System.out.println("delete");
 		return "redirect:/cart";
 	}
-	
+
 	@GetMapping("/clear-cart")
 	public String clearCart(@RequestParam("clientId") int cliId) {
 		List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(cliId);
@@ -178,7 +176,7 @@ public class ClientController {
 				for (PayDetailEntity payDetailEntity2 : payDetailEntities) {
 					payDetailJPA.delete(payDetailEntity2);
 				}
-			}								
+			}
 		}
 		return "redirect:/cart";
 	}
@@ -190,7 +188,7 @@ public class ClientController {
 		if (prodOptional.isPresent()) {
 			ProductEntity product = prodOptional.get();
 			model.addAttribute("product", product);
-			
+
 			int sold = 0;
 			if(productJPA.getSoldById(id)!=null) {
 				sold = productJPA.getSoldById(id);
@@ -198,7 +196,7 @@ public class ClientController {
 				sold = 0;
 			}
 			model.addAttribute("sold", sold);
-			
+
 			int quantityValue = quantity.orElse(1);
 			model.addAttribute("quantity", quantityValue);
 			model.addAttribute("path", "/singleProduct?id=" + id);
@@ -243,7 +241,7 @@ public class ClientController {
 	    return "client/category";
 	}
 
-	
+
 	@GetMapping("/myPayments")
 	public String myPayments(@RequestParam("cliId") int cliId,Model model) {
 		List<PaymentEntity> paymentsEntity = paymentJPA.getListPaymentByClientID(cliId);
@@ -253,15 +251,15 @@ public class ClientController {
 
 	@GetMapping("/checkout")
 	public String checkout(@RequestParam("clientId") int clientId, Model model) {
-		Optional<ClientEntity> clientOptional = clientJPA.findById(clientId);
+		Optional<AddressEntity> clientOptional = clientJPA.findById(clientId);
 		if (clientOptional.isPresent()) {
-			ClientEntity clientEntity = clientOptional.get();
+			AddressEntity clientEntity = clientOptional.get();
 			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(clientId);
-			
+
 			Date currentDate = new Date();
 			List<PromotionEntity> promotions = promotionJPA.findAllActivePromotions(currentDate);
 			//Optional<PromotionEntity> promOptional = promotionJPA.findById(prom_id);
-			double amount = payService.getAmount(clientId);	
+			double amount = payService.getAmount(clientId);
 			double shippingFee = (amount >= 500000) ? 0 : 30000;
 //			double voucher = 0;
 //			PromotionEntity promotionEntity = promOptional.get();
@@ -285,18 +283,18 @@ public class ClientController {
 		return "client/checkout";
 	}
 
-	
+
 	@PostMapping("/checkout")
 	public String payCart(@Valid PaymentBean pay, BindingResult error,Model model,
 			RedirectAttributes redirect, @RequestParam("clientId") int clientId,
 			@RequestParam("prom_id") int prom_id) {
-		
+
 		if (error.hasErrors()) {
 			model.addAttribute("error", error);
 		}
-		Optional<ClientEntity> clientOptional = clientJPA.findById(clientId);
+		Optional<AddressEntity> clientOptional = clientJPA.findById(clientId);
 		if (clientOptional.isPresent()) {
-			ClientEntity clientEntity = clientOptional.get();			
+			AddressEntity addressEntity = clientOptional.get();
 			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(clientId);
 			PaymentEntity paymentEntity = new PaymentEntity();
 			Optional<PromotionEntity> promOptional = promotionJPA.findById(prom_id);
@@ -305,18 +303,18 @@ public class ClientController {
 			int amount = 0;
 			for (PayDetailEntity payDetail : payDetailEntities) {
 				totalQuantity += payDetail.getQuantity();
-				
+
 				paymentEntity.setTotalQuantity(totalQuantity);
-				
+
 				paymentEntity.setPayMethod("Thanh toán khi nhận hàng.");
 				paymentEntity.setStatus(1);
-				paymentEntity.setClientPaymentsEntity(clientEntity);
+				paymentEntity.setAddressPaymentsEntity(addressEntity);
 				if(promOptional.isPresent()) {
 					PromotionEntity promotionEntity = promOptional.get();
-					
+
 					amount += payDetail.getPaydetailProductEntity().getRed_price() * payDetail.getQuantity();
 					int shippingFee = (amount >= 500000) ? 0 : 30000;
-			  
+
 			        int voucher = 0;
 			        if(amount >= promotionEntity.getStart_price()) {
 			        	voucher = (int)((amount)*promotionEntity.getDiscount()/100);
@@ -326,22 +324,22 @@ public class ClientController {
 			        	System.out.println("2");
 			        }
 			        double totalPayment = amount+shippingFee-voucher;
-			        paymentEntity.setOrderTotal(totalPayment);			        
+			        paymentEntity.setOrderTotal(totalPayment);
 					paymentEntity.setPromotionEnity(promotionEntity);
-					
+
 				}else {
 					amount += payDetail.getPaydetailProductEntity().getRed_price() * payDetail.getQuantity();
 					int shippingFee = (amount >= 500000) ? 0 : 30000;
 					paymentEntity.setPromotionEnity(null);
 					double totalPayment = amount+shippingFee;
-				    paymentEntity.setOrderTotal(totalPayment);			        
+				    paymentEntity.setOrderTotal(totalPayment);
 				}
-						
+
 				paymentJPA.save(paymentEntity);
-				
+
 				model.addAttribute("payment", paymentEntity);
-				
-		        
+
+
 				PaymentDetailEntity paymentDetailEntity = new PaymentDetailEntity();
 				paymentDetailEntity.setPaymentPaymentDetailEntity(paymentEntity);
 				paymentDetailEntity.setProd_id(payDetail.getPaydetailProductEntity().getProd_id());
@@ -350,7 +348,7 @@ public class ClientController {
 				paymentDetailEntity.setProd_quantity(payDetail.getQuantity());
 				paymentDetailEntity.setProd_images(payDetail.getPaydetailProductEntity().getImages().get(0).getName());
 				paymentDetailJPA.save(paymentDetailEntity);
-				
+
 				ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(clientId);
 				if(shoppingCartEntity != null) {
 					List<PayDetailEntity> payDetailEntity = payDetailJPA.getPayDetailByCartID(shoppingCartEntity.getCart_id());
@@ -358,30 +356,30 @@ public class ClientController {
 						for (PayDetailEntity payDetailEntity2 : payDetailEntities) {
 							payDetailJPA.delete(payDetailEntity2);
 						}
-					}								
+					}
 				}
-			}		
+			}
 
-			model.addAttribute("client", clientEntity);
+			model.addAttribute("client", addressEntity);
 			model.addAttribute("cartItems", payDetailEntities);
 			model.addAttribute("totalAmount", payService.getAmount(clientId));
-			return "redirect:/confirmation?clientId="+clientEntity.getCli_id()+"&payId="+paymentEntity.getPayId();
+			return "redirect:/confirmation?clientId="+addressEntity.getAdd_id()+"&payId="+paymentEntity.getPayId();
 		}
 		redirect.addFlashAttribute("pay", pay);
 		return "redirect:/checkout";
 	}
-	
+
 	@GetMapping("/update-status-MyPayment")
 	public String updateStstusPayment(@RequestParam("payId")int payId, @RequestParam("status")int status, Model model) {
 		Optional<PaymentEntity> paymentoptional= paymentJPA.findById(String.valueOf(payId));
 		int cliId = 0;
 		if (paymentoptional.isPresent()) {
 			PaymentEntity paymanetEntity = paymentoptional.get();
-			cliId = paymanetEntity.getClientPaymentsEntity().getCli_id();
+			cliId = paymanetEntity.getAddressPaymentsEntity().getAdd_id();
 			if(paymanetEntity.getStatus()==2) {
 				model.addAttribute("NoUpdateStatus", "Không thể hủy đơn hàng do cửa hàng đã nhận đơn!");
 				System.out.println("2");
-				
+
 //				return String.format("redirect:/myPayments?cliId=%d",cliId);
 			}else {
 				paymanetEntity.setStatus(status);
@@ -389,11 +387,11 @@ public class ClientController {
 				System.out.println("1");
 //				return String.format("redirect:/myPayments?cliId=%d",cliId);
 			}
-			
+
 		}
 		return String.format("redirect:/myPayments?cliId=%d",cliId);
 	}
-	
+
 	@GetMapping("/confirmation")
 	public String confirmation(@RequestParam("payId") int payId, Model model) {
 
@@ -401,14 +399,14 @@ public class ClientController {
 		model.addAttribute("payment", paymentDetail);
 		int amount = 0;
 		for (PaymentDetailEntity payDetail : paymentDetail) {
-			
+
 			amount += payDetail.getRed_price() * payDetail.getProd_quantity();
 			int shippingFee = (amount >= 500000) ? 0 : 30000;
 			//int totalPayment = amount + shippingFee;
-			model.addAttribute("shippingFee", shippingFee);			
+			model.addAttribute("shippingFee", shippingFee);
 	        model.addAttribute("totalPayment", amount);
-		}	
-		
+		}
+
 		Optional<PaymentEntity> paymentEntityOptional = paymentJPA.findById(String.valueOf(payId));
 	    if (paymentEntityOptional.isPresent()) {
 	        model.addAttribute("paymentEntity", paymentEntityOptional.get());
@@ -418,45 +416,43 @@ public class ClientController {
 
 	@GetMapping("/profile")
 	public String profileClient(@RequestParam("accId") int accId, Model model) {
-		ClientEntity entity = clientJPA.getClientByAccID(accId);
+		AccountEntity entity = accountJPA.getAccountsByAccId(accId);
 		if (entity != null) {
 			model.addAttribute("client", entity);
 		}
 		return "client/profile";
 	}
 
-	@PostMapping("/profile")
-	public String updateProfileClient(@Valid ClientBean clientBean, BindingResult error,
-			@RequestParam("accId") int accId, @RequestParam("avatar") MultipartFile file, Model model) {
-		Optional<AccountEntity> accOptional = accountJPA.findById(String.valueOf(accId));
-		if (error.hasErrors()) {
-			model.addAttribute("error", error);
-		}
-		if (accOptional.isPresent()) {
-			String fileName = uploadFile.Upload(file);
-			AccountEntity accEntity = accOptional.get();
-			if (fileName != null) {
-				accEntity.setAvatar(fileName);
-			} else {
-				accEntity.setAvatar(accEntity.getAvatar());
-			}
-			accEntity.setFullname(clientBean.getFullname());
-			accountJPA.save(accEntity);
-			System.out.println(accEntity.getFullname() + " + " + fileName);
-			ClientEntity cliEntity = clientJPA.getClientByAccID(accId);
-			cliEntity.setPhone(clientBean.getPhone());
-			cliEntity.setRoad(clientBean.getRoad());
-			cliEntity.setWard(clientBean.getWard());
-			cliEntity.setDistrict(clientBean.getDistrict());
-			cliEntity.setCity(clientBean.getCity());
-			cliEntity.setEmail(clientBean.getEmail());
-			System.out.println(clientBean.getPhone() + " + " + clientBean.getRoad() + " + " + clientBean.getWard()
-					+ " + " + clientBean.getDistrict() + " + " + clientBean.getCity() + " + " + clientBean.getCity());
-			clientJPA.save(cliEntity);
-
-		}
-		return String.format("redirect:/profile?accId=%d", accId);
-	}
+//	@PostMapping("/profile")
+//	public String updateProfileClient(@Valid ClientBean clientBean, BindingResult error,
+//			@RequestParam("accId") int accId, @RequestParam("avatar") MultipartFile file, Model model) {
+//		Optional<AccountEntity> accOptional = accountJPA.findById(String.valueOf(accId));
+//		if (error.hasErrors()) {
+//			model.addAttribute("error", error);
+//		}
+//		if (accOptional.isPresent()) {
+//			String fileName = uploadFile.Upload(file);
+//			AccountEntity accEntity = accOptional.get();
+//			if (fileName != null) {
+//				accEntity.setAvatar(fileName);
+//			} else {
+//				accEntity.setAvatar(accEntity.getAvatar());
+//			}
+//			accEntity.setFullname(clientBean.getFullname());
+//			accountJPA.save(accEntity);
+//			System.out.println(accEntity.getFullname() + " + " + fileName);
+//			AddressEntity cliEntity = clientJPA.getAccountByAccID(accId);
+//			cliEntity.setRoad(clientBean.getRoad());
+//			cliEntity.setWard(clientBean.getWard());
+//			cliEntity.setDistrict(clientBean.getDistrict());
+//			cliEntity.setCity(clientBean.getCity());
+//			System.out.println(clientBean.getPhone() + " + " + clientBean.getRoad() + " + " + clientBean.getWard()
+//					+ " + " + clientBean.getDistrict() + " + " + clientBean.getCity() + " + " + clientBean.getCity());
+//			clientJPA.save(cliEntity);
+//
+//		}
+//		return String.format("redirect:/profile?accId=%d", accId);
+//	}
 
 	@ModelAttribute("products")
 	public List<ProductEntity> Product() {

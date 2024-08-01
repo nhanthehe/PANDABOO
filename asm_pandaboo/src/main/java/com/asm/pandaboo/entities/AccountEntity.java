@@ -1,16 +1,9 @@
 package com.asm.pandaboo.entities;
 
 import java.io.Serializable;
+import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.Data;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,24 +19,30 @@ public class AccountEntity implements Serializable {
     @Column(name = "acc_id")
     private int acc_id;
     
-    @Column(name = "username", nullable = false)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "fullname", nullable = false)
+    @Column(name = "fullname")
     private String fullname;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "email")
+    private String email;
     
     @Column(name = "avatar")
     private String avatar;
     
-    @Column(name = "roles", nullable = false)
-    private boolean roles;
-    
     @Column(name = "status", nullable = false)
     private boolean status;
+
+    @OneToMany(mappedBy = "roleAccountAccEntity")
+    private List<RoleAccountEntity> accRoleAccounts;
     
     @OneToOne(mappedBy = "accountEntity", cascade = CascadeType.ALL)
-    private ClientEntity clientEntity;
+    private AddressEntity addressEntity;
 }

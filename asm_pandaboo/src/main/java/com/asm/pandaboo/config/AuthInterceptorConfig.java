@@ -7,17 +7,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.asm.pandaboo.components.AuthHandleInterceptor;
 
-@Configuration
+//@Configuration
 public class AuthInterceptorConfig implements WebMvcConfigurer {
 
-	@Autowired
-	AuthHandleInterceptor authHandleInterceptor;
-	
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {		
-		registry.addInterceptor(authHandleInterceptor)
-		//.addPathPatterns("")
-		.excludePathPatterns("/images/́́́́́́́**","/error/**","/login/**","/register","/logout"
-				,"/images/css/**","/images/js/**","/images/fonts/**","/images/img/**","/images/scss/**");
-	}
+//	@Autowired
+//	AuthHandleInterceptor authHandleInterceptor;
+//
+//	@Override
+//	public void addInterceptors(InterceptorRegistry registry) {
+//		registry.addInterceptor(authHandleInterceptor)
+//		//.addPathPatterns("")
+//		.excludePathPatterns("/images/́́́́́́́**","/error/**","/login/**","/register","/logout"
+//				,"/images/css/**","/images/js/**","/images/fonts/**","/images/img/**","/images/scss/**");
+//	}
 }

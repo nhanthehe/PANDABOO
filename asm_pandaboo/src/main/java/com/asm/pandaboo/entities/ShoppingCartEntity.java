@@ -33,8 +33,8 @@ public class ShoppingCartEntity implements Serializable {
 	private int cart_id;
 	
 	@ManyToOne
-	@JoinColumn(name = "cli_id",referencedColumnName = "cli_id")
-	private ClientEntity clientEntity;
+	@JoinColumn(name = "add_id",referencedColumnName = "add_id")
+	private AddressEntity addressEntity;
 	
 	@OneToMany(mappedBy = "cartEntity")
 	private List<PayDetailEntity> paydetails;
