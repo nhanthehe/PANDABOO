@@ -30,7 +30,7 @@ public class PayDetailService implements PayService {
 
 	@Override
 	public List<PayDetailEntity> getCartList(int clientId) {
-		List<PayDetailEntity> carts = payDetailJPA.getFindByCliId(clientId);
+		List<PayDetailEntity> carts = payDetailJPA.getFindByAccId(String.valueOf(clientId));
 		return carts == null ? new ArrayList<PayDetailEntity>() : carts;
 	}
 

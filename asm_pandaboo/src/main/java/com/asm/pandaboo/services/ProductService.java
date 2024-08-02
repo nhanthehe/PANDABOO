@@ -23,7 +23,7 @@ public class ProductService {
 	}
 	
 	public ShoppingCartEntity getShoppingCarts(int cliID){
-		return shoppingCartJPA.findShoppingCartByCliID(cliID);
+		return shoppingCartJPA.findShoppingCartByCliID(String.valueOf(cliID));
 	}
 	
 	public ProductEntity getProductById(int id) {
@@ -36,9 +36,9 @@ public class ProductService {
 		return null;
 	}
 	
-	public ShoppingCartEntity getCartByAccId(int addId) {
-		ShoppingCartEntity cart = this.getShoppingCarts(addId);
-		if(cart.getAddressEntity().getAdd_id() == addId) {
+	public ShoppingCartEntity getCartByAccId(int accId) {
+		ShoppingCartEntity cart = this.getShoppingCarts(accId);
+		if(cart.getCartAccountEntity().getAcc_id() == accId) {
 			return cart;
 		}else {
 			return null;

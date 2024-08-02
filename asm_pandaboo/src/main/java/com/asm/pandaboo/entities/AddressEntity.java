@@ -51,10 +51,6 @@ public class AddressEntity implements Serializable {
     @JoinColumn(name = "acc_id", referencedColumnName = "acc_id")
     private AccountEntity accountEntity;
    	
-   	@OneToOne(mappedBy = "addressEntity", cascade = CascadeType.ALL)
-   	private ShoppingCartEntity carts;
-   	
-   	@OneToMany(mappedBy = "addressPaymentsEntity")
-	private List<PaymentEntity> paymentsAddressEntity;
+
 
 }

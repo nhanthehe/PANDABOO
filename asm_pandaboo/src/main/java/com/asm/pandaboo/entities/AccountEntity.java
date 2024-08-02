@@ -45,4 +45,10 @@ public class AccountEntity implements Serializable {
     
     @OneToOne(mappedBy = "accountEntity", cascade = CascadeType.ALL)
     private AddressEntity addressEntity;
+
+    @OneToOne(mappedBy = "cartAccountEntity", cascade = CascadeType.ALL)
+   	private ShoppingCartEntity accountCart;
+
+   	@OneToMany(mappedBy = "accountPaymentsEntity")
+	private List<PaymentEntity> paymentsAccountEntity;
 }

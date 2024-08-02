@@ -167,8 +167,8 @@ public class ClientController {
 	}
 
 	@GetMapping("/clear-cart")
-	public String clearCart(@RequestParam("clientId") int cliId) {
-		List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(cliId);
+	public String clearCart(@RequestParam("clientId") String cliId) {
+		List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(cliId);
 		ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(cliId);
 		if(shoppingCartEntity != null) {
 			List<PayDetailEntity> payDetailEntity = payDetailJPA.getPayDetailByCartID(shoppingCartEntity.getCart_id());
@@ -250,16 +250,16 @@ public class ClientController {
 	}
 
 	@GetMapping("/checkout")
-	public String checkout(@RequestParam("clientId") int clientId, Model model) {
-		Optional<AddressEntity> clientOptional = clientJPA.findById(clientId);
-		if (clientOptional.isPresent()) {
-			AddressEntity clientEntity = clientOptional.get();
-			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(clientId);
+	public String checkout(@RequestParam("clientId") String clientId, Model model) {
+		Optional<AccountEntity> accountOptional = accountJPA.findById(clientId);
+		if (accountOptional.isPresent()) {
+			AccountEntity accountEntity = accountOptional.get();
+			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(clientId);
 
 			Date currentDate = new Date();
 			List<PromotionEntity> promotions = promotionJPA.findAllActivePromotions(currentDate);
 			//Optional<PromotionEntity> promOptional = promotionJPA.findById(prom_id);
-			double amount = payService.getAmount(clientId);
+			double amount = payService.getAmount(Integer.parseInt(clientId));
 			double shippingFee = (amount >= 500000) ? 0 : 30000;
 //			double voucher = 0;
 //			PromotionEntity promotionEntity = promOptional.get();
@@ -271,7 +271,7 @@ public class ClientController {
 //		        	System.out.println("2");
 //		        }
 //		    double totalPayment = amount+shippingFee-voucher;
-			model.addAttribute("client", clientEntity);
+			model.addAttribute("client", accountEntity);
 			model.addAttribute("cartItems", payDetailEntities);
 			model.addAttribute("shippingFee", shippingFee);
 			//model.addAttribute("voucher", voucher);
@@ -286,16 +286,16 @@ public class ClientController {
 
 	@PostMapping("/checkout")
 	public String payCart(@Valid PaymentBean pay, BindingResult error,Model model,
-			RedirectAttributes redirect, @RequestParam("clientId") int clientId,
+			RedirectAttributes redirect, @RequestParam("clientId") String accountId,
 			@RequestParam("prom_id") int prom_id) {
 
 		if (error.hasErrors()) {
 			model.addAttribute("error", error);
 		}
-		Optional<AddressEntity> clientOptional = clientJPA.findById(clientId);
-		if (clientOptional.isPresent()) {
-			AddressEntity addressEntity = clientOptional.get();
-			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(clientId);
+		Optional<AccountEntity> accountOptional = accountJPA.findById(accountId);
+		if (accountOptional.isPresent()) {
+			AccountEntity accountEntity = accountOptional.get();
+			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(accountId);
 			PaymentEntity paymentEntity = new PaymentEntity();
 			Optional<PromotionEntity> promOptional = promotionJPA.findById(prom_id);
 			paymentEntity.setPayDate(new Date());
@@ -308,7 +308,7 @@ public class ClientController {
 
 				paymentEntity.setPayMethod("Thanh toán khi nhận hàng.");
 				paymentEntity.setStatus(1);
-				paymentEntity.setAddressPaymentsEntity(addressEntity);
+				paymentEntity.setAccountPaymentsEntity(accountEntity);
 				if(promOptional.isPresent()) {
 					PromotionEntity promotionEntity = promOptional.get();
 
@@ -349,7 +349,7 @@ public class ClientController {
 				paymentDetailEntity.setProd_images(payDetail.getPaydetailProductEntity().getImages().get(0).getName());
 				paymentDetailJPA.save(paymentDetailEntity);
 
-				ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(clientId);
+				ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(accountId);
 				if(shoppingCartEntity != null) {
 					List<PayDetailEntity> payDetailEntity = payDetailJPA.getPayDetailByCartID(shoppingCartEntity.getCart_id());
 					if(payDetailEntity != null) {
@@ -360,10 +360,10 @@ public class ClientController {
 				}
 			}
 
-			model.addAttribute("client", addressEntity);
+			model.addAttribute("client", accountEntity);
 			model.addAttribute("cartItems", payDetailEntities);
-			model.addAttribute("totalAmount", payService.getAmount(clientId));
-			return "redirect:/confirmation?clientId="+addressEntity.getAdd_id()+"&payId="+paymentEntity.getPayId();
+			model.addAttribute("totalAmount", payService.getAmount(Integer.parseInt(accountId)));
+			return "redirect:/confirmation?clientId="+accountEntity.getAcc_id()+"&payId="+paymentEntity.getPayId();
 		}
 		redirect.addFlashAttribute("pay", pay);
 		return "redirect:/checkout";
@@ -375,7 +375,7 @@ public class ClientController {
 		int cliId = 0;
 		if (paymentoptional.isPresent()) {
 			PaymentEntity paymanetEntity = paymentoptional.get();
-			cliId = paymanetEntity.getAddressPaymentsEntity().getAdd_id();
+			cliId = paymanetEntity.getAccountPaymentsEntity().getAcc_id();
 			if(paymanetEntity.getStatus()==2) {
 				model.addAttribute("NoUpdateStatus", "Không thể hủy đơn hàng do cửa hàng đã nhận đơn!");
 				System.out.println("2");

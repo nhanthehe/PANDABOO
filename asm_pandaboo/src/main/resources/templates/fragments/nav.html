@@ -38,7 +38,7 @@
 										<a class="nav-link" href="/cart">Giỏ hàng</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" th:href="'/myPayments?cliId=' + ${session.acc.clientEntity?.cli_id}">Đơn hàng của bạn</a>
+										<a class="nav-link" th:href="'/myPayments?cliId=' + ${session.acc?.acc_id}">Đơn hàng của bạn</a>
 									</li>
 								</ul>
 							</li>

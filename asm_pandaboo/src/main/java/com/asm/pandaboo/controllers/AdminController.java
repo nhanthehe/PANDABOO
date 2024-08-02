@@ -183,15 +183,15 @@ public class AdminController {
 
 			for (RoleAccountEntity roleAcc : acc.getAccRoleAccounts()) {
 				String roleName = roleAcc.getRoleAccountRoleEntity().getRole_name().toLowerCase();
-				if ("superAdmin".equals(roleName)) {
+				if (roleName.equalsIgnoreCase("superAdmin")) {
 					return handleRedirect(path, "/statistical", Arrays.asList(
 							"/statistical", "/", "/changePass", "/checkout", "/promotionDetail",
 							"/promotion", "/productsDetail", "/products", "/profile"));
-				} else if ("admin".equals(roleName)) {
+				} else if (roleName.equalsIgnoreCase("admin")) {
 					return handleRedirect(path, "/products", Arrays.asList(
 							"/", "/changePass", "/checkout", "/promotionDetail", "/promotion",
 							"/productsDetail", "/products", "/profile"));
-				} else if ("client".equals(roleName)) {
+				} else if (roleName.equalsIgnoreCase("client")) {
 					return handleRedirect(path, "/pandaBooIndex", Arrays.asList(
 							"/singleProduct", "/confirmation", "/checkout", "/category", "/cart"));
 				}
@@ -239,14 +239,20 @@ public class AdminController {
 			accountEntity.setAvatar(fileName);
 			accountEntity.setStatus(true);
 			accountJPA.save(accountEntity);
-
+			System.out.println("1");
 			RoleAccountEntity roleAccount = new RoleAccountEntity();
 			for(RoleEntity role : roleJPA.findAll()){
 				if(role.getRole_name().equalsIgnoreCase("client")){
 					RoleEntity roleEntity = roleJPA.getRoleByName("client");
 					roleAccount.setRoleAccountAccEntity(accountEntity);
 					roleAccount.setRoleAccountRoleEntity(roleEntity);
+					System.out.println("2");
 					roleAccountJPA.save(roleAccount);
+
+					ShoppingCartEntity cartEntity = new ShoppingCartEntity();
+					cartEntity.setCartAccountEntity(accountEntity);
+					shoppingCartJPA.save(cartEntity);
+					System.out.println("3");
 				}
 			}
         }
@@ -255,12 +261,19 @@ public class AdminController {
 		return "admin/login";
     }
 
+
 	@GetMapping("/client_list")
 	public String client(Model model) {
 		List<AddressEntity> clients = clientJPA.findAll();
 		System.out.println("Fetched clients: " + clients);
 		model.addAttribute("clients", clients);
 		return "seller/client_list";
+	}
+
+
+	@GetMapping("/staff_detail")
+	public String staffshow() {
+		return "seller/staff_detail";
 	}
 
 	// ---------------------------------------PRODUCTS----------------------------------------

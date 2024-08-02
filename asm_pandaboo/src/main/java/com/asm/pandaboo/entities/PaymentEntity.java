@@ -52,9 +52,9 @@ public class PaymentEntity implements Serializable {
 	private int status;
 
 	@ManyToOne
-	@JoinColumn(name = "cli_id")
+	@JoinColumn(name = "acc_id")
 	@JsonBackReference
-	private AddressEntity addressPaymentsEntity;
+	private AccountEntity accountPaymentsEntity;
 
 	@ManyToOne
 	@JoinColumn(name = "prom_id")
