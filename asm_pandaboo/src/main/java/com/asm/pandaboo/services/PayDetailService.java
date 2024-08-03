@@ -10,7 +10,7 @@ import com.asm.pandaboo.entities.PayDetailEntity;
 import com.asm.pandaboo.entities.ProductEntity;
 import com.asm.pandaboo.entities.ShoppingCartEntity;
 import com.asm.pandaboo.interfaces.PayService;
-import com.asm.pandaboo.jpa.ClientJPA;
+import com.asm.pandaboo.jpa.AddressJPA;
 import com.asm.pandaboo.jpa.PayDetailJPA;
 import com.asm.pandaboo.jpa.ShoppingCartJPA;
 
@@ -20,7 +20,7 @@ public class PayDetailService implements PayService {
 	ProductService prodService;
 
 	@Autowired
-	ClientJPA clientJPA;
+    AddressJPA clientJPA;
 
 	@Autowired
 	ShoppingCartJPA cartJPA;

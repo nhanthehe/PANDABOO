@@ -61,7 +61,7 @@ public class AdminController {
     ImageJPA imageJPA;
 
     @Autowired
-    ClientJPA clientJPA;
+	AddressJPA clientJPA;
 
     @Autowired
     ShoppingCartJPA shoppingCartJPA;

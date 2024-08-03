@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.asm.pandaboo.jpa.*;
+import com.asm.pandaboo.models.AccountBean;
+import com.asm.pandaboo.models.AddressBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,18 +34,6 @@ import com.asm.pandaboo.entities.PromotionEntity;
 import com.asm.pandaboo.entities.ShoppingCartEntity;
 import com.asm.pandaboo.entities.UnitEntity;
 import com.asm.pandaboo.interfaces.PayService;
-import com.asm.pandaboo.jpa.AccountsJPA;
-import com.asm.pandaboo.jpa.CategoryJPA;
-import com.asm.pandaboo.jpa.ClientJPA;
-import com.asm.pandaboo.jpa.ImageJPA;
-import com.asm.pandaboo.jpa.PayDetailJPA;
-import com.asm.pandaboo.jpa.PaymentDetailJPA;
-import com.asm.pandaboo.jpa.PaymentJPA;
-import com.asm.pandaboo.jpa.ProductJPA;
-import com.asm.pandaboo.jpa.PromotionJPA;
-import com.asm.pandaboo.jpa.ShoppingCartJPA;
-import com.asm.pandaboo.jpa.UnitJPA;
-import com.asm.pandaboo.models.ClientBean;
 import com.asm.pandaboo.models.PaymentBean;
 import com.asm.pandaboo.services.UploadFile;
 
@@ -77,7 +68,7 @@ public class ClientController {
 	PaymentDetailJPA paymentDetailJPA;
 
 	@Autowired
-	ClientJPA clientJPA;
+	AddressJPA addressJPA;
 
 	@Autowired
 	ShoppingCartJPA shoppingCartJPA;
@@ -423,36 +414,54 @@ public class ClientController {
 		return "client/profile";
 	}
 
-//	@PostMapping("/profile")
-//	public String updateProfileClient(@Valid ClientBean clientBean, BindingResult error,
-//			@RequestParam("accId") int accId, @RequestParam("avatar") MultipartFile file, Model model) {
-//		Optional<AccountEntity> accOptional = accountJPA.findById(String.valueOf(accId));
-//		if (error.hasErrors()) {
-//			model.addAttribute("error", error);
-//		}
-//		if (accOptional.isPresent()) {
-//			String fileName = uploadFile.Upload(file);
-//			AccountEntity accEntity = accOptional.get();
-//			if (fileName != null) {
-//				accEntity.setAvatar(fileName);
-//			} else {
-//				accEntity.setAvatar(accEntity.getAvatar());
-//			}
-//			accEntity.setFullname(clientBean.getFullname());
-//			accountJPA.save(accEntity);
-//			System.out.println(accEntity.getFullname() + " + " + fileName);
-//			AddressEntity cliEntity = clientJPA.getAccountByAccID(accId);
-//			cliEntity.setRoad(clientBean.getRoad());
-//			cliEntity.setWard(clientBean.getWard());
-//			cliEntity.setDistrict(clientBean.getDistrict());
-//			cliEntity.setCity(clientBean.getCity());
-//			System.out.println(clientBean.getPhone() + " + " + clientBean.getRoad() + " + " + clientBean.getWard()
-//					+ " + " + clientBean.getDistrict() + " + " + clientBean.getCity() + " + " + clientBean.getCity());
+	@PostMapping("/profile")
+	public String updateProfileClient(
+			@Valid AccountBean accountBean, BindingResult error, AddressBean addressBean,
+			@RequestParam("accId") int accId, @RequestParam("avatar") MultipartFile file, Model model) {
+		Optional<AccountEntity> accOptional = accountJPA.findById(String.valueOf(accId));
+		if (error.hasErrors()) {
+			model.addAttribute("error", error);
+		}
+		if (accOptional.isPresent()) {
+			String fileName = uploadFile.Upload(file);
+			AccountEntity accEntity = accOptional.get();
+			if (fileName != null) {
+				accEntity.setAvatar(fileName);
+			} else {
+				accEntity.setAvatar(accEntity.getAvatar());
+			}
+			accEntity.setFullname(accountBean.getFullname());
+			accEntity.setPhone(accountBean.getPhone());
+			accEntity.setEmail(accountBean.getEmail());
+			accountJPA.save(accEntity);
+			System.out.println(accEntity.getFullname() + " + " + fileName);
+			AddressEntity addressEntity = addressJPA.getAccountByAccID(accId);
+			if(addressEntity != null){
+				addressEntity.setRoad(addressBean.getRoad());
+				addressEntity.setWard(addressBean.getWard());
+				addressEntity.setDistrict(addressBean.getDistrict());
+				addressEntity.setCity(addressBean.getCity());
+				addressEntity.setStatus(true);
+				addressEntity.setAccountEntity(accEntity);
+				addressJPA.save(addressEntity);
+			}else{
+				AddressEntity addEntity = new AddressEntity();
+				addEntity.setRoad(addressBean.getRoad());
+				addEntity.setWard(addressBean.getWard());
+				addEntity.setDistrict(addressBean.getDistrict());
+				addEntity.setCity(addressBean.getCity());
+				addEntity.setStatus(true);
+				addEntity.setAccountEntity(accEntity);
+				addressJPA.save(addEntity);
+			}
+
+			System.out.println(accountBean.getPhone() + " + " + addressBean.getRoad() + " + " + addressBean.getWard()
+					+ " + " + addressBean.getDistrict() + " + " + addressBean.getCity() );
 //			clientJPA.save(cliEntity);
-//
-//		}
-//		return String.format("redirect:/profile?accId=%d", accId);
-//	}
+
+		}
+		return String.format("redirect:/profile?accId=%d", accId);
+	}
 
 	@ModelAttribute("products")
 	public List<ProductEntity> Product() {
