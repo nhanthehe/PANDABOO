@@ -13,7 +13,7 @@
 					<h1>Giỏ hàng</h1>
 					<nav class="d-flex align-items-center">
 						<a href="/pandaBooIndex">Trang chủ<span class="lnr lnr-arrow-right"></span></a>
-						<a th:href="'/myPayments?cliId=' + ${session.acc.clientEntity?.cli_id}">Đơn hàng của bạn</a>
+						<a th:href="'/myPayments?cliId=' + ${session.acc?.acc_id}">Đơn hàng của bạn</a>
 					</nav>
 				</div>
 			</div>
@@ -52,12 +52,12 @@
 							<tbody>
 								<tr scope="row" th:each="item : ${payments}">
 									<td
-										th:text="${item?.clientPaymentsEntity?.accountEntity?.fullname}"></td>
+										th:text="${item?.accountPaymentsEntity?.fullname}"></td>
 									<td th:text="${#dates.format(item?.payDate, 'dd/MM/yyyy')}"></td>
 									<td th:text="${item?.totalQuantity}"></td>
 									<td th:text="${#numbers.formatCurrency(item?.orderTotal)}"></td>
 									<td th:text="${item?.payMethod}">200</td>
-									<td><a th:href="'/confirmation?clientId=' + ${session.acc.clientEntity?.cli_id} +'&payId=' + ${item?.payId}">Chi
+									<td><a th:href="'/confirmation?clientId=' + ${session.acc.acc_id} +'&payId=' + ${item?.payId}">Chi
 											tiết</a></td>
 									<td>
 										<span

@@ -52,10 +52,10 @@
 					<div class="details_item">
 						<h4>Địa chỉ nhận hàng</h4>
 						<ul class="list">
-							<li><a href="#"><span>Số nhà</span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.road}"></span></a></li>
-							<li><a href="#"><span>Khu vực, phường(xã) </span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.ward}"></span></a></li>
-							<li><a href="#"><span>Quận (Huyện)</span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.district}"></span></a></li>
-							<li><a href="#"><span>Tỉnh (Thành phố)</span> : <span th:text="${paymentEntity?.clientPaymentsEntity?.city}"></span></a></li>							
+							<li><a href="#"><span>Số nhà</span> : <span th:text="${paymentEntity?.accountPaymentsEntity?.addressEntity?.road}"></span></a></li>
+							<li><a href="#"><span>Khu vực, phường(xã) </span> : <span th:text="${paymentEntity?.accountPaymentsEntity?.addressEntity?.ward}"></span></a></li>
+							<li><a href="#"><span>Quận (Huyện)</span> : <span th:text="${paymentEntity?.accountPaymentsEntity?.addressEntity?.district}"></span></a></li>
+							<li><a href="#"><span>Tỉnh (Thành phố)</span> : <span th:text="${paymentEntity?.accountPaymentsEntity?.addressEntity?.city}"></span></a></li>
 						</ul>
 					</div>
 				</div>

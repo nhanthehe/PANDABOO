@@ -12,7 +12,7 @@ public interface PayDetailJPA extends JpaRepository<PayDetailEntity, String> {
 	@Query(value = "select p.* from paydetails p "
 			+ "inner join shoppingcarts s on s.cart_id=p.cart_id "
 			+ "inner join accounts a on a.acc_id = s.acc_id "
-			+ "where c.acc_id = :acc_id",nativeQuery = true)
+			+ "where a.acc_id = :acc_id",nativeQuery = true)
 	public List<PayDetailEntity> getFindByAccId(@Param("acc_id") String id);
 	
 	

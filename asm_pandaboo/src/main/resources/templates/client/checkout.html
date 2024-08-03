@@ -47,10 +47,10 @@
 								<tbody>
 									<tr class="alert" role="alert">
 										<td style="font-size: 19px" class="pt-0" >
-											<span th:text="${client?.accountEntity?.fullname}"></span> <br>
-											<span th:text="${client?.phone}">0907541927</span>
+											<span th:text="${acc?.fullname}"></span> <br>
+											<span th:text="${acc?.phone}">0907541927</span>
 										</td>
-										<td><span th:text="${client?.road + ', ' + client?.ward + ', ' + client?.district + ', ' + client?.city}">187, khu vực Bình Phước, Phước Thới, Ô
+										<td><span th:text="${acc?.addressEntity?.road + ', ' + acc?.addressEntity?.ward + ', ' + acc?.addressEntity?.district + ', ' + acc?.addressEntity?.city}">187, khu vực Bình Phước, Phước Thới, Ô
 												Môn, Cần Thơ</span></td>
 										<td><a class="changeAddress" th:href="'/profile?accId='+${session.acc.getAcc_id()}">Thay đổi</a></td>
 									</tr>
@@ -168,7 +168,7 @@
 									<!-- <li><a href="#">Voucher <span th:text="${#numbers.formatCurrency(voucher)}">#3</span></a></li> -->
 									<!-- <li><a href="#">Tổng thanh toán <span th:text="${#numbers.formatCurrency(totalAmount+shippingFee)}">234.900đ</span></a></li> -->
 								</ul>
-								<form th:action="@{error != null ? '/checkout?clientId=' + ${session.cliByAcc?.getCli_id()} : '/confirmation'}" th:method="POST">
+								<form th:action="@{error != null ? '/checkout?clientId=' + ${session.cliByAcc?.getAcc_id()} : '/confirmation'}" th:method="POST">
 									
 									<div class="payment_item">
 										<div class="radion_btn">
@@ -211,7 +211,7 @@
 													<option value="-1">Select a promotion</option>
 												 	<option th:each="promotion : ${promotions}"
 															th:value="${promotion?.prom_id}" th:text="${promotion?.prom_name} + ' - ' + ${#numbers.formatCurrency(promotion?.discount)} + ' discount'"															
-															th:href="'/getPromId?clientId=' + ${session.cliByAcc?.getCli_id()}">
+															th:href="'/getPromId?clientId=' + ${session.cliByAcc?.getAcc_id()}">
 															
 													</option>
 												</select>

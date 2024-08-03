@@ -131,8 +131,8 @@
                                     </div>
                                     <div class="prd-bottom">
                                         <input name="id" type="hidden" th:value="${prod?.prod_id}">
-                                        <input name="clientId" type="hidden" th:value="${session.cliByAcc?.getCli_id()}"> 
-                                        <a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id} + '&clientId=' + ${session.cliByAcc?.getCli_id()} + '&path=' + ${path} + '&page=' + ${productPage.number + 1} + '&size=' + ${selectedSize}}"
+                                        <input name="clientId" type="hidden" th:value="${session.cliByAcc?.getAcc_id()}">
+                                        <a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id} + '&clientId=' + ${session.cliByAcc?.getAcc_id()} + '&path=' + ${path} + '&page=' + ${productPage.number + 1} + '&size=' + ${selectedSize}}"
 											class="social-info"> <span class="ti-bag"></span>
 												<p class="hover-text">Thêm vào giỏ</p>
 										</a> 
