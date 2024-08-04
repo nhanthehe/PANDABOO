@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.asm.pandaboo.entities.ProductEntity;
 
+import java.util.List;
+
 public interface ProductJPA extends JpaRepository<ProductEntity, String> {
     @Query(value = "SELECT * FROM products WHERE prod_id=:prod_id", nativeQuery = true)
     public ProductEntity getProductByID(@Param("prod_id") String prod_id);
@@ -20,7 +22,16 @@ public interface ProductJPA extends JpaRepository<ProductEntity, String> {
     
     @Query(value = "SELECT SUM(prod_quantity) FROM paymentdetails WHERE prod_id = :prod_id", nativeQuery = true)
     public Integer getSoldById(@Param("prod_id") String prod_id);
-    
+
+    /*@Query(value = "SELECT * FROM products WHERE status = 1", nativeQuery = true)
+    public List<ProductEntity> getProductByStatus();*/
+
+    @Query(value = "SELECT * FROM products WHERE status = 1",nativeQuery = true)
+    public List<ProductEntity> getProducts();
+
+    @Query(value = "SELECT * FROM products WHERE status = 1",nativeQuery = true)
+    Page<ProductEntity> getProducts(Pageable pageable);
+
 //    @Query(value = "select COUNT(prod_id) as sold from paymentdetails "
 //    		+ "group by prod_id", nativeQuery = true)
 //    public Integer getSold();

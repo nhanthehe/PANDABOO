@@ -47,12 +47,12 @@
 								<tbody>
 									<tr class="alert" role="alert">
 										<td style="font-size: 19px" class="pt-0" >
-											<span th:text="${acc?.fullname}"></span> <br>
-											<span th:text="${acc?.phone}">0907541927</span>
+											<span th:text="${session?.acc?.fullname}"></span> <br>
+											<span th:text="${session?.acc?.phone}">0907541927</span>
 										</td>
-										<td><span th:text="${acc?.addressEntity?.road + ', ' + acc?.addressEntity?.ward + ', ' + acc?.addressEntity?.district + ', ' + acc?.addressEntity?.city}">187, khu vực Bình Phước, Phước Thới, Ô
+										<td><span th:text="${session?.acc?.addressEntity?.road + ', ' + session?.acc?.addressEntity?.ward + ', ' + session?.acc?.addressEntity?.district + ', ' + session?.acc?.addressEntity?.city}">187, khu vực Bình Phước, Phước Thới, Ô
 												Môn, Cần Thơ</span></td>
-										<td><a class="changeAddress" th:href="'/profile?accId='+${session.acc.getAcc_id()}">Thay đổi</a></td>
+										<td><a class="changeAddress" th:href="'/profile?accId='+${session?.acc?.getAcc_id()}">Thay đổi</a></td>
 									</tr>
 								</tbody>
 							</table>

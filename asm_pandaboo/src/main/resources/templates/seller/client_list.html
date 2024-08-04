@@ -19,14 +19,14 @@
 				</thead>
 				<tbody>
 					<tr th:each="client : ${clients}">
-						<td th:text="${client.accountEntity.fullname}">Full Name</td>
-						<td th:text="${client.email}">Email</td>
-						<td th:text="${client.phone}">Phone</td>
+						<td th:text="${client?.accountEntity?.fullname}">Full Name</td>
+						<td th:text="${client?.accountEntity?.email}">Email</td>
+						<td th:text="${client?.accountEntity?.phone}">Phone</td>
 						<td
-							th:text="${client.road + ', ' + client.ward + ', ' + client.district + ', ' + client.city}">Địa
+							th:text="${client?.road + ', ' + client?.ward + ', ' + client?.district + ', ' + client?.city}">Địa
 							chỉ</td>
 						<td><img
-							th:src="@{/images/{filename}(filename=${client.accountEntity.avatar})}"
+							th:src="@{/images/{filename}(filename=${client?.accountEntity?.avatar})}"
 							alt="Avatar" class="img-thumbnail" width="50" height="50">
 						</td>
 					</tr>
