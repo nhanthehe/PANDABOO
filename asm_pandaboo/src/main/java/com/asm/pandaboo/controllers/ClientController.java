@@ -214,7 +214,7 @@ public class ClientController {
 	            productPage = Page.empty();
 	        }
 	    } else {
-	        productPage = productJPA.findAll(pageable);
+	        productPage = productJPA.getProducts(pageable);
 	    }
 
 	    int totalPages = productPage.getTotalPages();
@@ -241,16 +241,16 @@ public class ClientController {
 	}
 
 	@GetMapping("/checkout")
-	public String checkout(@RequestParam("clientId") String clientId, Model model) {
-		Optional<AccountEntity> accountOptional = accountJPA.findById(clientId);
+	public String checkout(@RequestParam("accId") String accId, Model model) {
+		Optional<AccountEntity> accountOptional = accountJPA.findById(accId);
 		if (accountOptional.isPresent()) {
 			AccountEntity accountEntity = accountOptional.get();
-			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(clientId);
+			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(accId);
 
 			Date currentDate = new Date();
 			List<PromotionEntity> promotions = promotionJPA.findAllActivePromotions(currentDate);
 			//Optional<PromotionEntity> promOptional = promotionJPA.findById(prom_id);
-			double amount = payService.getAmount(Integer.parseInt(clientId));
+			double amount = payService.getAmount(Integer.parseInt(accId));
 			double shippingFee = (amount >= 500000) ? 0 : 30000;
 //			double voucher = 0;
 //			PromotionEntity promotionEntity = promOptional.get();
@@ -465,7 +465,7 @@ public class ClientController {
 
 	@ModelAttribute("products")
 	public List<ProductEntity> Product() {
-		return productJPA.findAll();
+		return productJPA.getProducts();
 	}
 
 	@ModelAttribute("categories")

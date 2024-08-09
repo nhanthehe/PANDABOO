@@ -86,7 +86,7 @@
 										<h5 th:text="${#numbers.formatCurrency(cart?.getAmount(session.cliByAcc?.getAcc_id())?:0)}" >204.900đ</h5>
 									</td>
 									<td>										
-										<a class="primary-btn" th:href="@{'/checkout?clientId=' + ${session.cliByAcc?.getAcc_id()}}">Mua</a>
+										<a class="primary-btn" th:href="@{'/checkout?accId=' + ${session.cliByAcc?.getAcc_id()}}">Mua</a>
 									</td>
 								</tr>							
 							</tbody>
