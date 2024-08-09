@@ -221,8 +221,8 @@ public class AdminController {
 					System.out.println(path);
 					return "redirect:/pandaBooIndex";
 				}
-
 			}
+
 		}
 		model.addAttribute("path", path);
 		return "admin/login";
@@ -333,7 +333,10 @@ public class AdminController {
 		}
 		return "seller/products";
 	}
-
+	@GetMapping("/staff_detail")
+	public String staffshow() {
+		return "seller/staff_detail";
+	}
 	@GetMapping("/productsDetail")
 	public String productsShow() {
 		return "seller/products_detail";
