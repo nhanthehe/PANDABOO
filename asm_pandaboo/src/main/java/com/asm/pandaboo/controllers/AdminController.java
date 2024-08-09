@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class AdminController {
     @Autowired
     AccountsJPA accountJPA;
@@ -172,49 +173,75 @@ public class AdminController {
 		return "redirect:/login";
 	}
 
-	@PostMapping("/login")
-	public String loginCheck(@RequestParam("path") String path,
-							 @RequestParam("username") String username,
-							 @RequestParam("password") String password,
-							 Model model,
-							 HttpServletResponse response,
-							 HttpSession session) {
+//	@PostMapping("/login")
+//	public String loginCheck(@RequestParam("path") String path,
+//							 @RequestParam("username") String username,
+//							 @RequestParam("password") String password,
+//							 Model model,
+//							 HttpServletResponse response,
+//							 HttpSession session) {
+//
+//		AccountEntity acc = accountJPA.getAccountsEntityByAcc(username);
+//
+//		if (acc == null || !password.equals(acc.getPassword())) {
+//			System.out.println("Login failed!");
+//			model.addAttribute("path", path);
+//			return "admin/login";
+//		} else {
+//			Cookie name = new Cookie(Contants.COOKIE_UERNAME, username);
+//			response.addCookie(name);
+//			System.out.println("Login successful!");
+//			model.addAttribute("acc", acc);
+//			session.setAttribute("acc", acc);
+//			session.setAttribute("cliByAcc", acc);
+//			model.addAttribute("cliByAcc", acc);
+//
+//			for (RoleAccountEntity roleAcc : acc.getAccRoleAccounts()) {
+//				String roleName = roleAcc.getRoleAccountRoleEntity().getRole_name().toLowerCase();
+//				if (roleName.equalsIgnoreCase("superAdmin")) {
+//					return handleRedirect(path, "/statistical", Arrays.asList(
+//							"/statistical", "/", "/changePass", "/checkout", "/promotionDetail",
+//							"/promotion", "/productsDetail", "/products", "/profile"));
+//				} else if (roleName.equalsIgnoreCase("admin")) {
+//					return handleRedirect(path, "/products", Arrays.asList(
+//							"/", "/changePass", "/checkout", "/promotionDetail", "/promotion",
+//							"/productsDetail", "/products", "/profile"));
+//				} else if (roleName.equalsIgnoreCase("client")) {
+//					return handleRedirect(path, "/pandaBooIndex", Arrays.asList(
+//							"/singleProduct", "/confirmation", "/checkout", "/category", "/cart"));
+//				}
+//			}
+//		}
+//
+//		model.addAttribute("path", path);
+//		return "admin/login";
+//	}
+@PostMapping("/login")
+public AccountEntity loginCheck(@RequestParam("username") String username,
+								@RequestParam("password") String password,
+								HttpSession session) {
+	AccountEntity acc = accountJPA.getAccountsEntityByAcc(username);
+	if (acc == null || !password.equals(acc.getPassword())) {
+		System.out.println("Login failed!");
+		return null;
+	} else {
+		session.setAttribute("acc", acc);
 
-		AccountEntity acc = accountJPA.getAccountsEntityByAcc(username);
-
-		if (acc == null || !password.equals(acc.getPassword())) {
-			System.out.println("Login failed!");
-			model.addAttribute("path", path);
-			return "admin/login";
-		} else {
-			Cookie name = new Cookie(Contants.COOKIE_UERNAME, username);
-			response.addCookie(name);
-			System.out.println("Login successful!");
-			model.addAttribute("acc", acc);
-			session.setAttribute("acc", acc);
-			session.setAttribute("cliByAcc", acc);
-			model.addAttribute("cliByAcc", acc);
-
-			for (RoleAccountEntity roleAcc : acc.getAccRoleAccounts()) {
-				String roleName = roleAcc.getRoleAccountRoleEntity().getRole_name().toLowerCase();
-				if (roleName.equalsIgnoreCase("superAdmin")) {
-					return handleRedirect(path, "/statistical", Arrays.asList(
-							"/statistical", "/", "/changePass", "/checkout", "/promotionDetail",
-							"/promotion", "/productsDetail", "/products", "/profile"));
-				} else if (roleName.equalsIgnoreCase("admin")) {
-					return handleRedirect(path, "/products", Arrays.asList(
-							"/", "/changePass", "/checkout", "/promotionDetail", "/promotion",
-							"/productsDetail", "/products", "/profile"));
-				} else if (roleName.equalsIgnoreCase("client")) {
-					return handleRedirect(path, "/pandaBooIndex", Arrays.asList(
-							"/singleProduct", "/confirmation", "/checkout", "/category", "/cart"));
-				}
+		for (RoleAccountEntity roleAcc : acc.getAccRoleAccounts()) {
+			String roleName = roleAcc.getRoleAccountRoleEntity().getRole_name().toLowerCase();
+			if (roleName.equalsIgnoreCase("superAdmin")) {
+				// Additional handling for SuperAdmin if needed
+			} else if (roleName.equalsIgnoreCase("admin")) {
+				// Additional handling for Admin if needed
+			} else if (roleName.equalsIgnoreCase("client")) {
+				// Additional handling for Client if needed
 			}
 		}
 
-		model.addAttribute("path", path);
-		return "admin/login";
+		System.out.println("Login successful!");
+		return acc;
 	}
+}
 
 	private String handleRedirect(String path, String defaultPath, List<String> validPaths) {
 		if (!path.isEmpty() && validPaths.contains(path)) {
@@ -225,10 +252,7 @@ public class AdminController {
 
 
     @PostMapping("/register")
-    public String saveRegister(
-			AccountBean accountBean,
-			BindingResult error,
-			Model model,
+    public AccountEntity saveRegister(AccountBean accountBean,
             @RequestParam("avatar") MultipartFile file
     ) {
 		AccountEntity accountEntity = new AccountEntity();
@@ -257,7 +281,7 @@ public class AdminController {
 				System.out.println("3");
 			}
 		}
-		return "redirect:/login";
+		return accountEntity;
     }
 
 
@@ -319,7 +343,7 @@ public class AdminController {
 		try {
 			emailService.sendMail(account.getEmail(), "Chào mừng bạn đã trở thành thành viện của PANDABOO Shop",
 					"Dear " + account.getFullname() + ",<br><br>Bạn đã chính hức trở thành nhân viên của PANDABOO" +
-							"								<br><br>Tên tài khoản:<br>"+account.getUsername()+",<br>Mật khẩu:<br>"+account.getPassword());
+							"<br>Tên tài khoản:"+account.getUsername()+"<br>Mật khẩu:"+account.getPassword());
 		} catch (MessagingException e) {
 			e.printStackTrace();
 			// Handle the exception, maybe log it or display a message
