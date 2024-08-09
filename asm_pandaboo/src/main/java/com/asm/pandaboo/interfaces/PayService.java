@@ -7,13 +7,13 @@ import com.asm.pandaboo.entities.ShoppingCartEntity;
 
 
 public interface PayService {
-	List<PayDetailEntity> getCartList(int clientId);
-	void add(int id, int clientId);
-	void add(int id, int quantity, int clientId);
-	void remove(int id, int clientId);
-	void update(int id, int quantity, int clientId);
-	void clear(int clientId);
-	int getCount(int clientId);
-	double getAmount(int clientId);
+	List<PayDetailEntity> getCartList(int accId);
+	void add(int id, int accId);
+	void add(int id, int quantity, int accId);
+	void remove(int id, int accId);
+	void update(int id, int quantity, int accId);
+	void clear(int accId);
+	int getCount(int accId);
+	double getAmount(int accId);
 	
 }

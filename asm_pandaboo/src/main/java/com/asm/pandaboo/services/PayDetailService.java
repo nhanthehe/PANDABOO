@@ -1,21 +1,17 @@
 package com.asm.pandaboo.services;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.asm.pandaboo.entities.ClientEntity;
 import com.asm.pandaboo.entities.PayDetailEntity;
 import com.asm.pandaboo.entities.ProductEntity;
 import com.asm.pandaboo.entities.ShoppingCartEntity;
 import com.asm.pandaboo.interfaces.PayService;
-import com.asm.pandaboo.jpa.ClientJPA;
+import com.asm.pandaboo.jpa.AddressJPA;
 import com.asm.pandaboo.jpa.PayDetailJPA;
-import com.asm.pandaboo.jpa.ProductJPA;
 import com.asm.pandaboo.jpa.ShoppingCartJPA;
 
 @Service
@@ -24,7 +20,7 @@ public class PayDetailService implements PayService {
 	ProductService prodService;
 
 	@Autowired
-	ClientJPA clientJPA;
+    AddressJPA clientJPA;
 
 	@Autowired
 	ShoppingCartJPA cartJPA;
@@ -34,7 +30,7 @@ public class PayDetailService implements PayService {
 
 	@Override
 	public List<PayDetailEntity> getCartList(int clientId) {
-		List<PayDetailEntity> carts = payDetailJPA.getFindByCliId(clientId);
+		List<PayDetailEntity> carts = payDetailJPA.getFindByAccId(String.valueOf(clientId));
 		return carts == null ? new ArrayList<PayDetailEntity>() : carts;
 	}
 
@@ -52,12 +48,12 @@ public class PayDetailService implements PayService {
 		if (prodEntity == null) {
 			throw new IllegalArgumentException("Product not found with id: " + id);
 		}
-		
-		ShoppingCartEntity shoppingCartEntity = prodService.getCartByClientId(clientId);
+
+		ShoppingCartEntity shoppingCartEntity = prodService.getCartByAccId(clientId);
 		if (shoppingCartEntity == null) {
             throw new IllegalArgumentException("Shopping cart not found for client id: " + clientId);
         }
-		
+
 		if (index == -1) {
 			PayDetailEntity payItem = new PayDetailEntity();
 			payItem.setPaydetailProductEntity(prodEntity);
@@ -65,14 +61,14 @@ public class PayDetailService implements PayService {
 			payItem.setQuantity(1);
 			carts.add(payItem);
 			payDetailJPA.save(payItem);
-		} else {			
+		} else {
 			PayDetailEntity payItem = carts.get(index);
 			int quantity = payItem.getQuantity();
 			payItem.setQuantity(quantity + 1);
 			carts.set(index, payItem);
 			payDetailJPA.save(payItem);
 		}
-		
+
 	}
 
 	@Override
@@ -89,12 +85,12 @@ public class PayDetailService implements PayService {
 		if (prodEntity == null) {
 			throw new IllegalArgumentException("Product not found with id: " + id);
 		}
-		
-		ShoppingCartEntity shoppingCartEntity = prodService.getCartByClientId(clientId);
+
+		ShoppingCartEntity shoppingCartEntity = prodService.getCartByAccId(clientId);
 		if (shoppingCartEntity == null) {
             throw new IllegalArgumentException("Shopping cart not found for client id: " + clientId);
         }
-		
+
 		if (index == -1) {
 			PayDetailEntity payItem = new PayDetailEntity();
 			payItem.setPaydetailProductEntity(prodEntity);
@@ -127,7 +123,7 @@ public class PayDetailService implements PayService {
 			payDetailJPA.delete(payItem);
 			carts.remove(index);
 		}
-		
+
 	}
 
 	@Override
@@ -137,17 +133,17 @@ public class PayDetailService implements PayService {
 			if (id == carts.get(indexCart).getPaydetailProductEntity().getProd_id()) {
 				PayDetailEntity payItem = carts.get(indexCart);
 				payItem.setQuantity(quantity);
-				carts.set(indexCart, payItem);	
+				carts.set(indexCart, payItem);
 				payDetailJPA.save(payItem);
 				break;
 			}
-		}	
+		}
 	}
 
 	@Override
 	public void clear(int clientId) {
 		List<PayDetailEntity> carts = this.getCartList(clientId);
-		
+
 		carts.clear();
 	}
 
@@ -155,7 +151,7 @@ public class PayDetailService implements PayService {
 	public int getCount(int clientId) {
 		int count = 0;
 		for (PayDetailEntity payDetail : this.getCartList(clientId)) {
-			count +=payDetail.getQuantity();			
+			count +=payDetail.getQuantity();
 		}
 		return count;
 	}
@@ -164,7 +160,7 @@ public class PayDetailService implements PayService {
 	public double getAmount(int clientId) {
 		int amount = 0;
 		for (PayDetailEntity payDetail : this.getCartList(clientId)) {
-			amount +=payDetail.getPaydetailProductEntity().getRed_price() * payDetail.getQuantity();			
+			amount +=payDetail.getPaydetailProductEntity().getRed_price() * payDetail.getQuantity();
 		}
 		return amount;
 	}

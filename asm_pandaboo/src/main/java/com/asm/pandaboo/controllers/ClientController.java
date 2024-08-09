@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.asm.pandaboo.jpa.*;
+import com.asm.pandaboo.models.AccountBean;
+import com.asm.pandaboo.models.AddressBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,16 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.asm.pandaboo.entities.AccountEntity;
 import com.asm.pandaboo.entities.CategoryEntity;
-import com.asm.pandaboo.entities.ClientEntity;
+import com.asm.pandaboo.entities.AddressEntity;
 import com.asm.pandaboo.entities.ImageEntity;
 import com.asm.pandaboo.entities.PayDetailEntity;
 import com.asm.pandaboo.entities.PaymentDetailEntity;
@@ -31,27 +31,14 @@ import com.asm.pandaboo.entities.PromotionEntity;
 import com.asm.pandaboo.entities.ShoppingCartEntity;
 import com.asm.pandaboo.entities.UnitEntity;
 import com.asm.pandaboo.interfaces.PayService;
-import com.asm.pandaboo.jpa.AccountsJPA;
-import com.asm.pandaboo.jpa.CategoryJPA;
-import com.asm.pandaboo.jpa.ClientJPA;
-import com.asm.pandaboo.jpa.ImageJPA;
-import com.asm.pandaboo.jpa.PayDetailJPA;
-import com.asm.pandaboo.jpa.PaymentDetailJPA;
-import com.asm.pandaboo.jpa.PaymentJPA;
-import com.asm.pandaboo.jpa.ProductJPA;
-import com.asm.pandaboo.jpa.PromotionJPA;
-import com.asm.pandaboo.jpa.ShoppingCartJPA;
-import com.asm.pandaboo.jpa.UnitJPA;
-import com.asm.pandaboo.models.ClientBean;
 import com.asm.pandaboo.models.PaymentBean;
-import com.asm.pandaboo.models.ProductBean;
 import com.asm.pandaboo.services.UploadFile;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class ClientController {
 
 	@Autowired
@@ -79,7 +66,7 @@ public class ClientController {
 	PaymentDetailJPA paymentDetailJPA;
 
 	@Autowired
-	ClientJPA clientJPA;
+	AddressJPA addressJPA;
 
 	@Autowired
 	ShoppingCartJPA shoppingCartJPA;
@@ -96,15 +83,16 @@ public class ClientController {
 	HttpServletRequest request;
 
 	@GetMapping("/pandaBooIndex")
-	public String index(Model model) {
+	public List<ProductEntity> index(Model model) {
 		model.addAttribute("path", request.getServletPath());
-		return "client/index";
+		return productJPA.getProducts();
 	}
 
-	@GetMapping("/cart")
-	public String cart(Model model) {
-		model.addAttribute("cart", payService);
-		return "client/cart";
+	@GetMapping("/cart/{accId}")
+	public List<PayDetailEntity> cart(Model model, @PathVariable int accId) {
+		List<PayDetailEntity> cartList = payService.getCartList(accId);
+		model.addAttribute("cart", cartList);
+		return cartList;
 	}
 
 //	@GetMapping("/add-to-cart")
@@ -114,30 +102,38 @@ public class ClientController {
 //		payService.add(id, cliId);
 //		return String.format("redirect:%s", path);
 //	}
-	
-	@GetMapping("/add-to-cart")
-	public String updateCart(@RequestParam("id") int id,
-	                         @RequestParam("clientId") int cliId,
-	                         @RequestParam("path") String path,
-	                         @RequestParam(name = "quantity", defaultValue = "1") int quantity,
-	                         @RequestParam(name = "page", required = false) Integer page,
-	                         @RequestParam(name = "size", required = false) Integer size,
-	                         Model model) {
-	    payService.add(id, cliId);
-	    
-	    if (page != null && size != null) {
-	        return String.format("redirect:/category?page=%d&size=%d", page, size);
-	    } else {
-	    	return String.format("redirect:%s", path);
-	    }
+
+	@PostMapping("/add-to-cart/{accId}/{id}")
+	public List<PayDetailEntity> updateCart(
+			@PathVariable int id,
+			@PathVariable int accId,
+			@RequestParam(name = "quantity", defaultValue = "1") int quantity,
+			@RequestParam(name = "page", required = false) Integer page,
+			// @RequestParam("path") String path,
+            @RequestParam(name = "size", required = false) Integer size,
+            Model model
+	) {
+	    payService.add(id, accId);
+		return payDetailJPA.getPayDetailByAccIdAndProdId(String.valueOf(accId),String.valueOf(id));
+//	    if (page != null && size != null) {
+//	        return String.format("redirect:/category?page=%d&size=%d", page, size);
+//	    } else {
+//	    	return String.format("redirect:%s", path);
+//	    }
 	}
 
 
-	@GetMapping("/add-to-cart-with-quantity")
-	public String updateCart(@RequestParam("id") int id, @RequestParam("quantity") int quantity,
-			@RequestParam("clientId") int cliId, @RequestParam("path") String path, Model model) {
-		payService.add(id, quantity, cliId);
-		return String.format("redirect:%s", path);
+	@PostMapping("/add-to-cart-with-quantity/{id}/{accId}/{quantity}")
+	public List<PayDetailEntity> updateCart(
+			@PathVariable int id,
+			@PathVariable int quantity,
+			@PathVariable int accId
+			//,@RequestParam("path") String path,
+			// Model model
+	) {
+		payService.add(id, quantity, accId);
+		return payDetailJPA.getPayDetailByAccIdAndProdId(String.valueOf(accId),String.valueOf(id));
+		//return String.format("redirect:%s", path);
 	}
 
 	@GetMapping("/upQuantity")
@@ -150,47 +146,50 @@ public class ClientController {
 		return String.format("redirect:%s&quantity=%d", path, quantity > 1 ? quantity - 1 : 1);
 	}
 
-	@GetMapping("/update-shopping-cart")
-	public String updateCart(@RequestParam("id") int id, @RequestParam("clientId") int cliId,
-			@RequestParam("quantity") int quantity, Model model) {
+	@PutMapping("/update-shopping-cart/{id}/{accId}/{quantity}")
+	public List<PayDetailEntity> updateCart(@PathVariable int id, @PathVariable int accId,
+											@PathVariable int quantity
+			, Model model
+	) {
 		if (quantity <= 0) {
-			payService.remove(id, cliId);
+			payService.remove(id, accId);
 		} else {
-			payService.update(id, quantity, cliId);
+			payService.update(id, quantity, accId);
 		}
-		return "redirect:/cart";
+		return payDetailJPA.getPayDetailByAccIdAndProdId(String.valueOf(accId),String.valueOf(id));
+
 	}
 
-	@GetMapping("/remove-cart")
-	public String removeCart(@RequestParam("id") int id, @RequestParam("clientId") int cliId) {
-		payService.remove(id, cliId);
+	@DeleteMapping("/remove-cart/{id}/{accId}")
+	public void removeCart(@PathVariable int id, @PathVariable int accId) {
+		payService.remove(id, accId);
 		System.out.println("delete");
-		return "redirect:/cart";
+		//return "redirect:/cart";
 	}
-	
-	@GetMapping("/clear-cart")
-	public String clearCart(@RequestParam("clientId") int cliId) {
-		List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(cliId);
-		ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(cliId);
+
+	@DeleteMapping ("/clear-cart/{accId}")
+	public List<PayDetailEntity> clearCart(@PathVariable String accId) {
+		List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(accId);
+		ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(accId);
 		if(shoppingCartEntity != null) {
 			List<PayDetailEntity> payDetailEntity = payDetailJPA.getPayDetailByCartID(shoppingCartEntity.getCart_id());
 			if(payDetailEntity != null) {
 				for (PayDetailEntity payDetailEntity2 : payDetailEntities) {
 					payDetailJPA.delete(payDetailEntity2);
 				}
-			}								
+			}
 		}
-		return "redirect:/cart";
+		return payService.getCartList(Integer.parseInt(accId));
 	}
 
-	@GetMapping("/singleProduct")
-	public String singleProduct(@RequestParam("id") String id, Model model,
+	@GetMapping("/singleProduct/{id}")
+	public ProductEntity singleProduct(@PathVariable String id, Model model,
 			@RequestParam("quantity") Optional<Integer> quantity) {
 		Optional<ProductEntity> prodOptional = productJPA.findById(id);
 		if (prodOptional.isPresent()) {
 			ProductEntity product = prodOptional.get();
 			model.addAttribute("product", product);
-			
+
 			int sold = 0;
 			if(productJPA.getSoldById(id)!=null) {
 				sold = productJPA.getSoldById(id);
@@ -198,16 +197,17 @@ public class ClientController {
 				sold = 0;
 			}
 			model.addAttribute("sold", sold);
-			
+
 			int quantityValue = quantity.orElse(1);
 			model.addAttribute("quantity", quantityValue);
 			model.addAttribute("path", "/singleProduct?id=" + id);
 		}
-		return "client/single-product";
+		return productJPA.getProductByID(id);
 	}
 
 	@GetMapping("/category")
-	public String category(Model model,
+	public List<ProductEntity> category(
+			Model model,
 	                       @RequestParam(name = "page", defaultValue = "1") int page,
 	                       @RequestParam(name = "size", defaultValue = "3") int size,
 	                       @RequestParam(name = "catId", required = false) String idOptional) {
@@ -225,7 +225,7 @@ public class ClientController {
 	            productPage = Page.empty();
 	        }
 	    } else {
-	        productPage = productJPA.findAll(pageable);
+	        productPage = productJPA.getProducts(pageable);
 	    }
 
 	    int totalPages = productPage.getTotalPages();
@@ -240,28 +240,28 @@ public class ClientController {
 	    model.addAttribute("productPage", productPage);
 	    model.addAttribute("selectedSize", size);
 
-	    return "client/category";
+	    return productJPA.getProducts();
 	}
 
-	
-	@GetMapping("/myPayments")
-	public String myPayments(@RequestParam("cliId") int cliId,Model model) {
-		List<PaymentEntity> paymentsEntity = paymentJPA.getListPaymentByClientID(cliId);
+
+	@GetMapping("/myPayments/{accId}")
+	public List<PaymentEntity> myPayments(@PathVariable int accId,Model model) {
+		List<PaymentEntity> paymentsEntity = paymentJPA.getListPaymentByClientID(accId);
 		model.addAttribute("payments", paymentsEntity);
-		return "client/myPayments";
+		return paymentsEntity;
 	}
 
-	@GetMapping("/checkout")
-	public String checkout(@RequestParam("clientId") int clientId, Model model) {
-		Optional<ClientEntity> clientOptional = clientJPA.findById(clientId);
-		if (clientOptional.isPresent()) {
-			ClientEntity clientEntity = clientOptional.get();
-			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(clientId);
-			
+	@GetMapping("/checkout/{accId}")
+	public List<PayDetailEntity> checkout(@PathVariable String accId, Model model) {
+		Optional<AccountEntity> accountOptional = accountJPA.findById(accId);
+		if (accountOptional.isPresent()) {
+			AccountEntity accountEntity = accountOptional.get();
+			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(accId);
+
 			Date currentDate = new Date();
 			List<PromotionEntity> promotions = promotionJPA.findAllActivePromotions(currentDate);
 			//Optional<PromotionEntity> promOptional = promotionJPA.findById(prom_id);
-			double amount = payService.getAmount(clientId);	
+			double amount = payService.getAmount(Integer.parseInt(accId));
 			double shippingFee = (amount >= 500000) ? 0 : 30000;
 //			double voucher = 0;
 //			PromotionEntity promotionEntity = promOptional.get();
@@ -272,8 +272,9 @@ public class ClientController {
 //		        	voucher = 0;
 //		        	System.out.println("2");
 //		        }
+
 //		    double totalPayment = amount+shippingFee-voucher;
-			model.addAttribute("client", clientEntity);
+			model.addAttribute("client", accountEntity);
 			model.addAttribute("cartItems", payDetailEntities);
 			model.addAttribute("shippingFee", shippingFee);
 			//model.addAttribute("voucher", voucher);
@@ -281,42 +282,49 @@ public class ClientController {
 			//model.addAttribute("totalPayment", totalPayment);
 			//model.addAttribute("proId", promOptional);
 			model.addAttribute("promotions", promotions);
+			return payDetailJPA.getFindByAccId(accId);
 		}
-		return "client/checkout";
+		return payDetailJPA.getFindByAccId(accId);
 	}
 
-	
-	@PostMapping("/checkout")
-	public String payCart(@Valid PaymentBean pay, BindingResult error,Model model,
-			RedirectAttributes redirect, @RequestParam("clientId") int clientId,
-			@RequestParam("prom_id") int prom_id) {
-		
-		if (error.hasErrors()) {
-			model.addAttribute("error", error);
-		}
-		Optional<ClientEntity> clientOptional = clientJPA.findById(clientId);
-		if (clientOptional.isPresent()) {
-			ClientEntity clientEntity = clientOptional.get();			
-			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByCliId(clientId);
+
+	@PostMapping("/checkout/{accountId}/{prom_id}")
+	public List<PaymentDetailEntity> payCart(
+			//@Valid PaymentBean pay, BindingResult error,
+			Model model,
+			RedirectAttributes redirect,
+			@PathVariable String accountId,
+			@PathVariable int prom_id) {
+
+//		if (error.hasErrors()) {
+//			model.addAttribute("error", error);
+//		}
+		Optional<AccountEntity> accountOptional = accountJPA.findById(accountId);
+		if (accountOptional.isPresent()) {
+			AccountEntity accountEntity = accountOptional.get();
+			List<PayDetailEntity> payDetailEntities = payDetailJPA.getFindByAccId(accountId);
+
 			PaymentEntity paymentEntity = new PaymentEntity();
+
 			Optional<PromotionEntity> promOptional = promotionJPA.findById(prom_id);
+
 			paymentEntity.setPayDate(new Date());
+
 			int totalQuantity = 0;
 			int amount = 0;
 			for (PayDetailEntity payDetail : payDetailEntities) {
 				totalQuantity += payDetail.getQuantity();
-				
 				paymentEntity.setTotalQuantity(totalQuantity);
-				
 				paymentEntity.setPayMethod("Thanh toán khi nhận hàng.");
 				paymentEntity.setStatus(1);
-				paymentEntity.setClientPaymentsEntity(clientEntity);
+				paymentEntity.setAccountPaymentsEntity(accountEntity);
+
 				if(promOptional.isPresent()) {
 					PromotionEntity promotionEntity = promOptional.get();
-					
+
 					amount += payDetail.getPaydetailProductEntity().getRed_price() * payDetail.getQuantity();
 					int shippingFee = (amount >= 500000) ? 0 : 30000;
-			  
+
 			        int voucher = 0;
 			        if(amount >= promotionEntity.getStart_price()) {
 			        	voucher = (int)((amount)*promotionEntity.getDiscount()/100);
@@ -326,22 +334,22 @@ public class ClientController {
 			        	System.out.println("2");
 			        }
 			        double totalPayment = amount+shippingFee-voucher;
-			        paymentEntity.setOrderTotal(totalPayment);			        
+			        paymentEntity.setOrderTotal(totalPayment);
 					paymentEntity.setPromotionEnity(promotionEntity);
-					
+
 				}else {
 					amount += payDetail.getPaydetailProductEntity().getRed_price() * payDetail.getQuantity();
 					int shippingFee = (amount >= 500000) ? 0 : 30000;
 					paymentEntity.setPromotionEnity(null);
 					double totalPayment = amount+shippingFee;
-				    paymentEntity.setOrderTotal(totalPayment);			        
+				    paymentEntity.setOrderTotal(totalPayment);
 				}
-						
+
 				paymentJPA.save(paymentEntity);
-				
+
 				model.addAttribute("payment", paymentEntity);
-				
-		        
+
+
 				PaymentDetailEntity paymentDetailEntity = new PaymentDetailEntity();
 				paymentDetailEntity.setPaymentPaymentDetailEntity(paymentEntity);
 				paymentDetailEntity.setProd_id(payDetail.getPaydetailProductEntity().getProd_id());
@@ -350,38 +358,39 @@ public class ClientController {
 				paymentDetailEntity.setProd_quantity(payDetail.getQuantity());
 				paymentDetailEntity.setProd_images(payDetail.getPaydetailProductEntity().getImages().get(0).getName());
 				paymentDetailJPA.save(paymentDetailEntity);
-				
-				ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(clientId);
+
+				ShoppingCartEntity shoppingCartEntity = shoppingCartJPA.findShoppingCartByCliID(accountId);
 				if(shoppingCartEntity != null) {
 					List<PayDetailEntity> payDetailEntity = payDetailJPA.getPayDetailByCartID(shoppingCartEntity.getCart_id());
 					if(payDetailEntity != null) {
 						for (PayDetailEntity payDetailEntity2 : payDetailEntities) {
 							payDetailJPA.delete(payDetailEntity2);
 						}
-					}								
+					}
 				}
-			}		
+			}
 
-			model.addAttribute("client", clientEntity);
+			model.addAttribute("client", accountEntity);
 			model.addAttribute("cartItems", payDetailEntities);
-			model.addAttribute("totalAmount", payService.getAmount(clientId));
-			return "redirect:/confirmation?clientId="+clientEntity.getCli_id()+"&payId="+paymentEntity.getPayId();
+			model.addAttribute("totalAmount", payService.getAmount(Integer.parseInt(accountId)));
+			return paymentDetailJPA.getListPaymentDetailByAccId(Integer.parseInt(accountId));
 		}
-		redirect.addFlashAttribute("pay", pay);
-		return "redirect:/checkout";
+//		redirect.addFlashAttribute("pay", pay);
+		//return error;
+		return paymentDetailJPA.getListPaymentDetailByAccId(Integer.parseInt(accountId));
 	}
-	
-	@GetMapping("/update-status-MyPayment")
-	public String updateStstusPayment(@RequestParam("payId")int payId, @RequestParam("status")int status, Model model) {
+
+	@PutMapping("/update-status-MyPayment/{payId}/{status}")
+	public PaymentEntity updateStatusPayment(@PathVariable int payId, @PathVariable int status, Model model) {
 		Optional<PaymentEntity> paymentoptional= paymentJPA.findById(String.valueOf(payId));
 		int cliId = 0;
 		if (paymentoptional.isPresent()) {
 			PaymentEntity paymanetEntity = paymentoptional.get();
-			cliId = paymanetEntity.getClientPaymentsEntity().getCli_id();
+			cliId = paymanetEntity.getAccountPaymentsEntity().getAcc_id();
 			if(paymanetEntity.getStatus()==2) {
 				model.addAttribute("NoUpdateStatus", "Không thể hủy đơn hàng do cửa hàng đã nhận đơn!");
 				System.out.println("2");
-				
+
 //				return String.format("redirect:/myPayments?cliId=%d",cliId);
 			}else {
 				paymanetEntity.setStatus(status);
@@ -389,11 +398,11 @@ public class ClientController {
 				System.out.println("1");
 //				return String.format("redirect:/myPayments?cliId=%d",cliId);
 			}
-			
+
 		}
-		return String.format("redirect:/myPayments?cliId=%d",cliId);
+		return paymentJPA.findById(String.valueOf(payId)).get();
 	}
-	
+
 	@GetMapping("/confirmation")
 	public String confirmation(@RequestParam("payId") int payId, Model model) {
 
@@ -401,14 +410,14 @@ public class ClientController {
 		model.addAttribute("payment", paymentDetail);
 		int amount = 0;
 		for (PaymentDetailEntity payDetail : paymentDetail) {
-			
+
 			amount += payDetail.getRed_price() * payDetail.getProd_quantity();
 			int shippingFee = (amount >= 500000) ? 0 : 30000;
 			//int totalPayment = amount + shippingFee;
-			model.addAttribute("shippingFee", shippingFee);			
+			model.addAttribute("shippingFee", shippingFee);
 	        model.addAttribute("totalPayment", amount);
-		}	
-		
+		}
+
 		Optional<PaymentEntity> paymentEntityOptional = paymentJPA.findById(String.valueOf(payId));
 	    if (paymentEntityOptional.isPresent()) {
 	        model.addAttribute("paymentEntity", paymentEntityOptional.get());
@@ -418,7 +427,7 @@ public class ClientController {
 
 	@GetMapping("/profile")
 	public String profileClient(@RequestParam("accId") int accId, Model model) {
-		ClientEntity entity = clientJPA.getClientByAccID(accId);
+		AccountEntity entity = accountJPA.getAccountsByAccId(accId);
 		if (entity != null) {
 			model.addAttribute("client", entity);
 		}
@@ -426,7 +435,8 @@ public class ClientController {
 	}
 
 	@PostMapping("/profile")
-	public String updateProfileClient(@Valid ClientBean clientBean, BindingResult error,
+	public String updateProfileClient(
+			@Valid AccountBean accountBean, BindingResult error, AddressBean addressBean,
 			@RequestParam("accId") int accId, @RequestParam("avatar") MultipartFile file, Model model) {
 		Optional<AccountEntity> accOptional = accountJPA.findById(String.valueOf(accId));
 		if (error.hasErrors()) {
@@ -440,19 +450,34 @@ public class ClientController {
 			} else {
 				accEntity.setAvatar(accEntity.getAvatar());
 			}
-			accEntity.setFullname(clientBean.getFullname());
+			accEntity.setFullname(accountBean.getFullname());
+			accEntity.setPhone(accountBean.getPhone());
+			accEntity.setEmail(accountBean.getEmail());
 			accountJPA.save(accEntity);
 			System.out.println(accEntity.getFullname() + " + " + fileName);
-			ClientEntity cliEntity = clientJPA.getClientByAccID(accId);
-			cliEntity.setPhone(clientBean.getPhone());
-			cliEntity.setRoad(clientBean.getRoad());
-			cliEntity.setWard(clientBean.getWard());
-			cliEntity.setDistrict(clientBean.getDistrict());
-			cliEntity.setCity(clientBean.getCity());
-			cliEntity.setEmail(clientBean.getEmail());
-			System.out.println(clientBean.getPhone() + " + " + clientBean.getRoad() + " + " + clientBean.getWard()
-					+ " + " + clientBean.getDistrict() + " + " + clientBean.getCity() + " + " + clientBean.getCity());
-			clientJPA.save(cliEntity);
+			AddressEntity addressEntity = addressJPA.getAccountByAccID(accId);
+			if(addressEntity != null){
+				addressEntity.setRoad(addressBean.getRoad());
+				addressEntity.setWard(addressBean.getWard());
+				addressEntity.setDistrict(addressBean.getDistrict());
+				addressEntity.setCity(addressBean.getCity());
+				addressEntity.setStatus(true);
+				addressEntity.setAccountEntity(accEntity);
+				addressJPA.save(addressEntity);
+			}else{
+				AddressEntity addEntity = new AddressEntity();
+				addEntity.setRoad(addressBean.getRoad());
+				addEntity.setWard(addressBean.getWard());
+				addEntity.setDistrict(addressBean.getDistrict());
+				addEntity.setCity(addressBean.getCity());
+				addEntity.setStatus(true);
+				addEntity.setAccountEntity(accEntity);
+				addressJPA.save(addEntity);
+			}
+
+			System.out.println(accountBean.getPhone() + " + " + addressBean.getRoad() + " + " + addressBean.getWard()
+					+ " + " + addressBean.getDistrict() + " + " + addressBean.getCity() );
+//			clientJPA.save(cliEntity);
 
 		}
 		return String.format("redirect:/profile?accId=%d", accId);
@@ -460,7 +485,7 @@ public class ClientController {
 
 	@ModelAttribute("products")
 	public List<ProductEntity> Product() {
-		return productJPA.findAll();
+		return productJPA.getProducts();
 	}
 
 	@ModelAttribute("categories")

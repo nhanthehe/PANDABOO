@@ -34,7 +34,7 @@
 								<div class="form-group">
 									<label class="form-label">Họ tên</label> <input type="text"
 										class="form-control" id="fullname" name="fullname"
-										th:value="${client?.accountEntity?.fullname}">
+										th:value="${session.acc?.fullname}">
 									<p class="text-danger"
 										th:if='${error?.getFieldError("fullname") != null}'
 										th:text='${error?.getFieldError("fullname")?.getDefaultMessage()}'></p>
@@ -43,7 +43,7 @@
 								<div class="form-group">
 									<label class="form-label">Số điện thoại</label> <input
 										type="text" class="form-control" id="phone" name="phone"
-										th:value="${client?.phone}" >	
+										th:value="${session.acc?.phone}" >
 									<p class="text-danger"
 										th:if='${error?.getFieldError("phone") != null}'
 										th:text='${error?.getFieldError("phone")?.getDefaultMessage()}'></p>								
@@ -54,30 +54,30 @@
 										<div class="col-3">
 											<label class="form-label">Số nhà(Đường)</label> <input type="text"
 												class="form-control" id="road" name="road"
-												th:value="${client?.road}">												
+												th:value="${session.acc?.addressEntity?.road}">
 										</div>
 										<div class="col-3">
 											<label class="form-label">Phường(Xã)</label> <input type="text"
 												class="form-control" id="ward" name="ward"
-												th:value="${client?.ward}">												
+												th:value="${session.acc?.addressEntity?.ward}">
 										</div>
 										<div class="col-3">
 											<label class="form-label">Quận(Huyện)</label> <input type="text"
 												class="form-control" id="district" name="district"
-												th:value="${client?.district}">												
+												th:value="${session.acc?.addressEntity?.district}">
 										</div>
 										<div class="col-3">
 											<label class="form-label">Tỉnh(Thành phố)</label> 
 											<input type="text"
 												class="form-control" id="city" name="city"
-												th:value="${client?.city}">												
+												th:value="${session.acc?.addressEntity?.city}">
 										</div>
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="form-label">Email</label> <input type="email"
 										class="form-control" id="email" name="email"
-										th:value="${client?.email}">
+										th:value="${session.acc?.email}">
 									<p class="text-danger"
 										th:if='${error?.getFieldError("email") != null}'
 										th:text='${error?.getFieldError("email")?.getDefaultMessage()}'></p>		
@@ -92,7 +92,7 @@
 							</div>
 							<div class="col-lg-3">
 								<div>
-									<img alt="" th:src="'/images/' + ${client?.accountEntity?.avatar}" style="width: 100%; height: 340px">
+									<img alt="" th:src="'/images/' + ${session?.acc?.avatar}" style="width: 100%; height: 340px">
 								</div>
 							</div>
 							<div class="form-group">

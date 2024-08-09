@@ -63,7 +63,7 @@
 							<div class="col-md-12 form-group">
 								<input type="text" class="form-control" id="username"
 									name="username" placeholder="Tên đăng nhập"
-									th:value="${acc?.username}">
+									   th:value="${acc?.username}" >
 								<p class="text-danger"
 									th:if="${error?.getFieldError('username') != null}"
 									th:text="${error?.getFieldError('username')?.getDefaultMessage()}"></p>
@@ -71,7 +71,7 @@
 							<div class="col-md-12 form-group">
 								<input type="password" class="form-control" id="password"
 									name="password" placeholder="Mật khẩu"
-									th:value="${acc?.password}">
+									   th:value="${acc?.password}">
 								<p class="text-danger"
 									th:if="${error?.getFieldError('password') != null}"
 									th:text="${error?.getFieldError('password')?.getDefaultMessage()}"></p>
@@ -79,11 +79,27 @@
 							<div class="col-md-12 form-group">
 								<input type="text" class="form-control" id="fullname"
 									name="fullname" placeholder="Họ và tên"
-									th:value="${acc?.fullname}">
+									   th:value="${acc?.fullname}">
 								<p class="text-danger"
 									th:if="${error?.getFieldError('fullname') != null}"
 									th:text="${error?.getFieldError('fullname')?.getDefaultMessage()}"></p>
 							</div>
+							<div class="col-md-12 form-group">
+								<input type="text" class="form-control" id="phone"
+									   name="phone" placeholder="Số điện thoại"
+									   th:value="${acc?.phone}">
+								<p class="text-danger"
+								   th:if="${error?.getFieldError('phone') != null}"
+								   th:text="${error?.getFieldError('phone')?.getDefaultMessage()}"></p>
+							</div>
+							<div class="col-md-12 form-group">
+								<input type="text" class="form-control" id="email"
+									   name="email" placeholder="Địa chỉ email"
+									   th:value="${acc?.email}">
+								<p class="text-danger"
+								   th:if="${error?.getFieldError('email') != null}"
+								   th:text="${error?.getFieldError('email')?.getDefaultMessage()}"></p>
+								</div>
 							<div class="col-md-12 form-group">
 								<input type="file" class="form-control" id="avatar"
 									name="avatar">

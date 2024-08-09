@@ -35,7 +35,7 @@
 							<tbody>
 								<tr scope="row" th:each="item : ${payments}">
 									<td
-										th:text="${item?.clientPaymentsEntity?.accountEntity?.fullname}"></td>
+										th:text="${item?.accountPaymentsEntity?.fullname}"></td>
 									<td th:text="${#dates.format(item?.payDate, 'dd/MM/yyyy')}"></td>
 									<td th:text="${item?.totalQuantity}"></td>
 									<td th:text="${#numbers.formatCurrency(item?.orderTotal)}"></td>

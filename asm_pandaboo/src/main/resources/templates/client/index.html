@@ -241,7 +241,7 @@
 									</div>
 									<div class="prd-bottom">
 
-										<a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id}+ '&clientId=' + ${session.cliByAcc?.getCli_id()} + '&path=' + ${path}}" class="social-info"> <span class="ti-bag"></span>
+										<a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id}+ '&accId=' + ${session.cliByAcc?.getAcc_id()} + '&path=' + ${path}}" class="social-info"> <span class="ti-bag"></span>
 											<p class="hover-text">Thêm vào giỏ</p>
 										</a> 
 										
@@ -281,7 +281,7 @@
 									</div>
 									<div class="prd-bottom">
 
-										<a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id}+ '&clientId=' + ${session.cliByAcc?.getCli_id()} + '&path=' + ${path}}" class="social-info"> <span class="ti-bag"></span>
+										<a th:href="@{'/add-to-cart?id=' + ${prod?.prod_id}+ '&clientId=' + ${session.cliByAcc?.getAcc_id()} + '&path=' + ${path}}" class="social-info"> <span class="ti-bag"></span>
 											<p class="hover-text">Thêm vào giỏ</p>
 										</a> <a href="" class="social-info"> <span
 											class="lnr lnr-star"></span>

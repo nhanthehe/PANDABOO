@@ -3,15 +3,7 @@ package com.asm.pandaboo.entities;
 import java.io.Serializable;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,9 +24,9 @@ public class ShoppingCartEntity implements Serializable {
 	@Column(name = "cart_id")
 	private int cart_id;
 	
-	@ManyToOne
-	@JoinColumn(name = "cli_id",referencedColumnName = "cli_id")
-	private ClientEntity clientEntity;
+	@OneToOne
+	@JoinColumn(name = "acc_id",referencedColumnName = "acc_id")
+	private AccountEntity cartAccountEntity;
 	
 	@OneToMany(mappedBy = "cartEntity")
 	private List<PayDetailEntity> paydetails;

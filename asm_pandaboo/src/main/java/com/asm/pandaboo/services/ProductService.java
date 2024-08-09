@@ -23,7 +23,7 @@ public class ProductService {
 	}
 	
 	public ShoppingCartEntity getShoppingCarts(int cliID){
-		return shoppingCartJPA.findShoppingCartByCliID(cliID);
+		return shoppingCartJPA.findShoppingCartByCliID(String.valueOf(cliID));
 	}
 	
 	public ProductEntity getProductById(int id) {
@@ -36,12 +36,12 @@ public class ProductService {
 		return null;
 	}
 	
-	public ShoppingCartEntity getCartByClientId(int cliID) {
-		ShoppingCartEntity cart = this.getShoppingCarts(cliID);
-		if(cart.getClientEntity().getCli_id() == cliID) {
+	public ShoppingCartEntity getCartByAccId(int accId) {
+		ShoppingCartEntity cart = this.getShoppingCarts(accId);
+		if(cart.getCartAccountEntity().getAcc_id() == accId) {
 			return cart;
 		}else {
 			return null;
-		}		
+		}
 	}
 }

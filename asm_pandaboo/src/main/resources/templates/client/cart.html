@@ -42,7 +42,7 @@
 								</tr>
 							</thead>
 							<tbody >
-								<tr class="alert" role="alert" th:each="item : ${cart?.getCartList(session.cliByAcc?.getCli_id())}">
+								<tr class="alert" role="alert" th:each="item : ${cart?.getCartList(session.cliByAcc?.getAcc_id())}">
 									<!-- <td><label class="checkbox-wrap checkbox-primary">
 											<input type="checkbox" checked> <span
 											class="checkmark"></span>
@@ -60,33 +60,33 @@
 											<input th:value="${item?.quantity}" type="text" name="qty" id="sst"
 												value="1" title="Quantity:" class="input-text qty">
 											<a class="increase items-count mr-2" type="button"
-												th:href="@{'/update-shopping-cart?id='+${item?.paydetailProductEntity?.prod_id} + '&quantity=' + ${item?.quantity+1} + '&clientId=' + ${session.cliByAcc?.getCli_id()}}"> <i
+												th:href="@{'/update-shopping-cart?id='+${item?.paydetailProductEntity?.prod_id} + '&quantity=' + ${item?.quantity+1} + '&clientId=' + ${session.cliByAcc?.getAcc_id()}}"> <i
 												class="lnr lnr-chevron-up"></i>
 											</a> 
 											<a class="reduced items-count mr-2" type="button" 
-												th:href="@{'/update-shopping-cart?id='+${item?.paydetailProductEntity?.prod_id} + '&quantity=' + ${item?.quantity-1} + '&clientId=' + ${session.cliByAcc?.getCli_id()}}"> <i
+												th:href="@{'/update-shopping-cart?id='+${item?.paydetailProductEntity?.prod_id} + '&quantity=' + ${item?.quantity-1} + '&clientId=' + ${session.cliByAcc?.getAcc_id()}}"> <i
 												class="lnr lnr-chevron-down"></i>
 											</a>
 										</div>
 									</td>
 									<td th:text="${#numbers.formatCurrency(item?.quantity * item?.paydetailProductEntity?.red_price)}">thanhtien</td>
 									<td>
-										<a th:href="@{'/remove-cart?id=' + ${item?.paydetailProductEntity?.prod_id} + '&clientId=' + ${session.cliByAcc?.getCli_id()}}" type="button" class="close" >
+										<a th:href="@{'/remove-cart?id=' + ${item?.paydetailProductEntity?.prod_id} + '&clientId=' + ${session.cliByAcc?.getAcc_id()}}" type="button" class="close" >
 											<span aria-hidden="true"><i class="fa fa-close"></i></span>
 										</a>
 									</td>
 								</tr>	
 					
 								<tr>
-									<td><a th:href="@{'/clear-cart?clientId=' + ${session.cliByAcc?.getCli_id()}}" type="button" class="clear" >Xóa tất cả</a></td>
+									<td><a th:href="@{'/clear-cart?clientId=' + ${session.cliByAcc?.getAcc_id()}}" type="button" class="clear" >Xóa tất cả</a></td>
 									<td></td>
 									<td></td>
 									<td><span>Tổng thanh toán</span></td>
 									<td>
-										<h5 th:text="${#numbers.formatCurrency(cart?.getAmount(session.cliByAcc?.getCli_id())?:0)}" >204.900đ</h5>
+										<h5 th:text="${#numbers.formatCurrency(cart?.getAmount(session.cliByAcc?.getAcc_id())?:0)}" >204.900đ</h5>
 									</td>
 									<td>										
-										<a class="primary-btn" th:href="@{'/checkout?clientId=' + ${session.cliByAcc?.getCli_id()}}">Mua</a>
+										<a class="primary-btn" th:href="@{'/checkout?accId=' + ${session.cliByAcc?.getAcc_id()}}">Mua</a>
 									</td>
 								</tr>							
 							</tbody>
