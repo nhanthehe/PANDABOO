@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en"
       layout:decorate="~{layoutAdmin}">
 <head>
-
+    <!-- Include necessary CSS and JS files -->
 </head>
 <body>
 <div layout:fragment="mainView">
@@ -12,61 +12,61 @@
         <div class="container">
             <div class="billing_details">
                 <div class="row">
-                    <div class="col-lg-8">
+                    <div class="col-lg-12">
                         <h3 style="color: #FFA500; margin-bottom: 20px;">QUẢN LÝ NHÂN VIÊN</h3>
-                        <form id="staff_detail"
-                              th:action="${promotion != null ? '/update-staff' : '/add-staff'}"
-                              method="post" onsubmit="return validateDate();"
-                              enctype="multipart/form-data">
-                            <input type="hidden" name="prom_id" />
+                        <form th:action="${account == null ? '/add-staff' : '/update-staff'}" method="post" enctype="multipart/form-data">
                             <div class="row">
-                                <div class="col-md-12 form-group">
-                                    <label for="username">Tên nhân viên:</label>
-                                    <input type="text" class="form-control" id="username" name="username" th:value="${promotion?.prom_name}">
-                                    <p class="text-danger" th:if='${error?.getFieldError("prom_name") != null}' th:text='${error?.getFieldError("prom_name")?.getDefaultMessage()}'></p>
+                                <div th:if="${account != null}">
+                                    <input type="hidden" id="acc_id" name="acc_id" th:value="${account?.acc_id}">
                                 </div>
                                 <div class="col-md-12 form-group">
                                     <label for="fullname">Họ và tên:</label>
-                                    <input type="text" class="form-control" id="fullname" name="fullname" th:value="${promotion?.prom_name}">
+                                    <input type="text" class="form-control" id="fullname" name="fullname" th:value="${account?.fullname}">
+
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="username">Tên đăng nhập:</label>
+                                    <input type="text" class="form-control" id="username" name="username" th:value="${account?.username}">
+
                                 </div>
                                 <div class="col-md-12 form-group">
                                     <label for="password">Mật khẩu:</label>
-                                    <input type="text" class="form-control" id="password" name="password" th:value="${promotion?.prom_name}">
-                                    <p class="text-danger" th:if='${error?.getFieldError("prom_name") != null}' th:text='${error?.getFieldError("prom_name")?.getDefaultMessage()}'></p>
+                                    <input type="password" class="form-control" id="password" name="password" th:value="${account?.password}">
+
                                 </div>
                                 <div class="col-md-12 form-group">
                                     <label for="phone">SDT:</label>
-                                    <input type="text" class="form-control" id="phone" name="phone" th:value="${promotion?.prom_name}">
-                                    <p class="text-danger" th:if='${error?.getFieldError("prom_name") != null}' th:text='${error?.getFieldError("prom_name")?.getDefaultMessage()}'></p>
+                                    <input type="text" class="form-control" id="phone" name="phone" th:value="${account?.phone}">
+
                                 </div>
                                 <div class="col-md-12 form-group">
                                     <label for="email">Email:</label>
-                                    <input type="text" class="form-control" id="email" name="email" th:value="${promotion?.prom_name}">
-                                    <p class="text-danger" th:if='${error?.getFieldError("prom_name") != null}' th:text='${error?.getFieldError("prom_name")?.getDefaultMessage()}'></p>
+                                    <input type="email" class="form-control" id="email" name="email" th:value="${account?.email}">
+
                                 </div>
                                 <div class="col-md-12 form-group">
                                     <label for="avatar">Hình ảnh:</label>
                                     <div class="custom-file">
-                                        <input type="file" name="avatar" class="custom-file-input" id="avatar" accept="image/*">
+                                        <input type="file" name="avatar" class="form-file" id="avatar" accept="image/*">
                                         <label class="custom-file-label" for="avatar">Chọn tệp</label>
                                     </div>
+
                                 </div>
                                 <div class="col-md-12 form-group">
-                                    <label for="role">Vai trò:</label>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                                        <label class="form-check-label" for="inlineRadio1">Nhân viên bán hàng</label>
+                                    <label for="roles">Vai trò:</label>
+                                    <input type="hidden" name="roleIds" value=""/> <!-- Ensure roleIds is always present -->
+                                    <div th:each="role : ${roles}">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="roleIds" th:value="${role.role_id}"
+                                                   th:checked="${selectedRoles != null ? selectedRoles.contains(role.role_id) : false}">
+                                            <label class="form-check-label" th:text="${role.role_name}"></label>
+                                        </div>
                                     </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                                        <label class="form-check-label" for="inlineRadio2">Nhân viên quản lý kho</label>
-                                    </div>
-                                </div>
 
-                            </div>
-                            <div class="form-group mt-3">
-                                <input class="btn btn-warning" type="submit" role="button" th:value="${promotion != null ? 'Cập nhật' : 'Thêm'}">
-                                <input class="btn btn-secondary ml-2" type="button" value="Làm mới" onclick="resetForm()">
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <button type="submit" value="submit" class="primary-btn">Xác nhận</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -74,28 +74,7 @@
             </div>
         </div>
     </section>
-    <!-- End Main Content -->
-    <script>
-        function resetForm() {
-            document.getElementById('staff_detail').reset();
-        }
-    </script>
-    <script th:inline="javascript">
-        function validateDate() {
-            var startDate = document.getElementById('start_date').value;
-            var endDate = document.getElementById('end_date').value;
 
-            if (startDate && endDate) {
-                if (startDate > endDate) {
-                    alert('Ngày bắt đầu phải trước ngày kết thúc');
-                    return false;
-                }
-            }
-            return true;
-        }
-    </script>
 </div>
-<!-- End Page Content -->
-
 </body>
 </html>

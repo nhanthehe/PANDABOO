@@ -26,12 +26,8 @@ public class AccountBean {
     private String phone;
 
     @NotBlank(message = "Địa chỉ email không được để trống")
-    @Email
+    @Email(message="Email không đúng định dạng")
     private String email;
-    
-    @NotNull(message = "Ảnh đại diện không được để trống")
-    private String avatar;
-
     
     private boolean status;
 

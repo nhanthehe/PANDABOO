@@ -16,7 +16,7 @@ public class UploadFile {
 	public String Upload(MultipartFile file) {
 		if (!file.isEmpty()) {
 			// Path root = Paths.get("src/main/resources/static/images");
-			Path root = Paths.get("uploads");
+			Path root = Paths.get("asm_pandaboo/uploads");
 			try {
 				Files.createDirectories(root);
 
@@ -38,7 +38,7 @@ public class UploadFile {
 
 	public boolean removeFile(String name) {
 		try {
-			Path root = Paths.get(String.format("uploads/%s", name));
+			Path root = Paths.get(String.format("asm_pandaboo/uploads/%s", name));
 			return Files.deleteIfExists(root);
 		} catch (Exception e) {
 			return false;
