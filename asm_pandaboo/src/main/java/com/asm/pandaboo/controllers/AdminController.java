@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -226,37 +228,35 @@ public AccountEntity loginCheck(@RequestParam("username") String username,
 		return null;
 	} else {
 		session.setAttribute("acc", acc);
-
-		for (RoleAccountEntity roleAcc : acc.getAccRoleAccounts()) {
-			String roleName = roleAcc.getRoleAccountRoleEntity().getRole_name().toLowerCase();
-			if (roleName.equalsIgnoreCase("superAdmin")) {
-				// Additional handling for SuperAdmin if needed
-			} else if (roleName.equalsIgnoreCase("admin")) {
-				// Additional handling for Admin if needed
-			} else if (roleName.equalsIgnoreCase("client")) {
-				// Additional handling for Client if needed
-			}
-		}
-
 		System.out.println("Login successful!");
 		return acc;
+//
+//		for (RoleAccountEntity roleAcc : acc.getAccRoleAccounts()) {
+//			String roleName = roleAcc.getRoleAccountRoleEntity().getRole_name().toLowerCase();
+//			if (roleName.equalsIgnoreCase("superAdmin")) {
+//				// Additional handling for SuperAdmin if needed
+//			} else if (roleName.equalsIgnoreCase("admin")) {
+//				// Additional handling for Admin if needed
+//			} else if (roleName.equalsIgnoreCase("client")) {
+//				// Additional handling for Client if needed
+//			}
+//		}
 	}
 }
 
-	private String handleRedirect(String path, String defaultPath, List<String> validPaths) {
-		if (!path.isEmpty() && validPaths.contains(path)) {
-			return "redirect:" + path;
-		}
-		return "redirect:" + defaultPath;
-	}
+//	private String handleRedirect(String path, String defaultPath, List<String> validPaths) {
+//		if (!path.isEmpty() && validPaths.contains(path)) {
+//			return "redirect:" + path;
+//		}
+//		return "redirect:" + defaultPath;
+//	}
 
 
-    @PostMapping("/register")
-    public AccountEntity saveRegister(AccountBean accountBean,
-            @RequestParam("avatar") MultipartFile file
-    ) {
+	@PostMapping("/register")
+	public AccountEntity saveRegister(AccountBean accountBean,
+									  @RequestPart("avatar") MultipartFile file) {
 		AccountEntity accountEntity = new AccountEntity();
-        String fileName = uploadFile.Upload(file);
+		String fileName = uploadFile.Upload(file);
 		accountEntity.setUsername(accountBean.getUsername());
 		accountEntity.setPassword(accountBean.getPassword());
 		accountEntity.setFullname(accountBean.getFullname());
@@ -265,40 +265,35 @@ public AccountEntity loginCheck(@RequestParam("username") String username,
 		accountEntity.setAvatar(fileName);
 		accountEntity.setStatus(true);
 		accountJPA.save(accountEntity);
-		System.out.println("1");
+
 		RoleAccountEntity roleAccount = new RoleAccountEntity();
-		for(RoleEntity role : roleJPA.findAll()){
-			if(role.getRole_name().equalsIgnoreCase("client")){
-				RoleEntity roleEntity = roleJPA.getRoleByName("client");
-				roleAccount.setRoleAccountAccEntity(accountEntity);
-				roleAccount.setRoleAccountRoleEntity(roleEntity);
-				System.out.println("2");
-				roleAccountJPA.save(roleAccount);
+		RoleEntity roleEntity = roleJPA.getRoleByName("client");
+		roleAccount.setRoleAccountAccEntity(accountEntity);
+		roleAccount.setRoleAccountRoleEntity(roleEntity);
+		roleAccountJPA.save(roleAccount);
 
-				ShoppingCartEntity cartEntity = new ShoppingCartEntity();
-				cartEntity.setCartAccountEntity(accountEntity);
-				shoppingCartJPA.save(cartEntity);
-				System.out.println("3");
-			}
-		}
+		ShoppingCartEntity cartEntity = new ShoppingCartEntity();
+		cartEntity.setCartAccountEntity(accountEntity);
+		shoppingCartJPA.save(cartEntity);
+
 		return accountEntity;
-    }
-
-
-	@GetMapping("/client_list")
-	public String client(Model model) {
-		List<AddressEntity> clients = clientJPA.findAll();
-		System.out.println("Fetched clients: " + clients);
-		model.addAttribute("clients", clients);
-		return "seller/client_list";
 	}
 
 
+//	@GetMapping("/client_list")
+//	public String client(Model model) {
+//		List<AddressEntity> clients = clientJPA.findAll();
+//		System.out.println("Fetched clients: " + clients);
+//		model.addAttribute("clients", clients);
+//		return "seller/client_list";
+//	}
+
+
 	@GetMapping("/staff")
-	public String showAddStaffList(Model model) {
+	public List<AccountEntity> showAddStaffList(Model model) {
 		model.addAttribute("selectedRoles", List.of());
 		model.addAttribute("roles", roleService.findAll()); // Ensure roles are set
-		return "seller/staff";
+		return accountJPA.findAll();
 	}
 
 	@GetMapping("/staff_detail")
@@ -307,8 +302,8 @@ public AccountEntity loginCheck(@RequestParam("username") String username,
 	}
 
 	@PostMapping("/add-staff")
-	public String addStaff(@ModelAttribute AccountBean accountBean,
-						   @RequestParam("avatar") MultipartFile file,
+	public ResponseEntity<AccountEntity> addStaff(AccountBean accountBean,
+						   @RequestPart("avatar") MultipartFile file,
 						   @RequestParam(required = false) List<Integer> roleIds, Model model) {
 		String fileName = uploadFile.Upload(file);
 		AccountEntity account = new AccountEntity();
@@ -334,28 +329,30 @@ public AccountEntity loginCheck(@RequestParam("username") String username,
 					}).collect(Collectors.toList());
 
 			roleAccountJPA.saveAll(roleAccountEntities);
-
-			// Set the roles to the account
 			account.setAccRoleAccounts(roleAccountEntities);
 		}
 
-		// Send email notification
 		try {
-			emailService.sendMail(account.getEmail(), "Chào mừng bạn đã trở thành thành viện của PANDABOO Shop",
-					"Dear " + account.getFullname() + ",<br><br>Bạn đã chính hức trở thành nhân viên của PANDABOO" +
-							"<br>Tên tài khoản:"+account.getUsername()+"<br>Mật khẩu:"+account.getPassword());
+			String email = account.getEmail();
+			if (email == null || email.isEmpty()) {
+				throw new IllegalArgumentException("Email address cannot be null or empty");
+			}
+			emailService.sendMail(email,
+					"Chào mừng bạn đã trở thành thành viên của PANDABOO Shop",
+					"Dear " + account.getFullname() + ",<br><br>Bạn đã chính thức trở thành nhân viên của PANDABOO" +
+							"<br>Tên tài khoản: " + account.getUsername() + "<br>Mật khẩu: " + account.getPassword());
 		} catch (MessagingException e) {
 			e.printStackTrace();
-			// Handle the exception, maybe log it or display a message
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
 		}
-
-		return "redirect:/staff_detail";
+        return ResponseEntity.status(HttpStatus.CREATED).body(account);
 	}
 
 
 
 	@GetMapping("/update-staff/{id}")
-	public String showUpdateStaffForm(@PathVariable String id, Model model) {
+	public ResponseEntity<AccountEntity> showUpdateStaffForm(@PathVariable String id, Model model) {
 		Optional<AccountEntity> accountOptional = accountJPA.findById(id);
 		if(accountOptional.isPresent()){
 			AccountEntity accountEntity = accountOptional.get();
@@ -363,94 +360,127 @@ public AccountEntity loginCheck(@RequestParam("username") String username,
 			model.addAttribute("roles", roleService.findAll());
 			model.addAttribute("selectedRoles", accountEntity.getAccRoleAccounts().stream()
 					.map(ra -> ra.getRoleAccountRoleEntity().getRole_id()).collect(Collectors.toList()));
-			return "seller/staff_detail";
-		}
-		return "redirect:/staff_detail"; // Redirect if account not found
+            return ResponseEntity.status(HttpStatus.FOUND).body(accountEntity);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
 	}
 
-	@PostMapping("/update-staff")
-	public String updateStaff(AccountBean accountBean,Model model,
-							  @RequestParam("acc_id") String id,
-							  @RequestParam("avatar") MultipartFile file,
-							  @RequestParam List<Integer> roleIds) {
-		String fileName = uploadFile.Upload(file);
-		Optional<AccountEntity> accountOptional = accountJPA.findById(id);
-		if(accountOptional.isPresent()){
-			AccountEntity account = accountOptional.get();
-			account.setUsername(accountBean.getUsername());
-			account.setFullname(accountBean.getFullname());
-			account.setPassword(accountBean.getPassword());
-			account.setPhone(accountBean.getPhone());
-			account.setEmail(accountBean.getEmail());
-			account.setAvatar(fileName);
-			account.setStatus(true);
-			accountService.save(account);
+    @PutMapping("/update-staff")
+    public ResponseEntity<AccountEntity> updateStaff(
+            @RequestParam("acc_id") String id,
+            @RequestPart("avatar") MultipartFile file,
+            @RequestParam("username") String username,
+            @RequestParam("fullname") String fullname,
+            @RequestParam("password") String password,
+            @RequestParam("phone") String phone,
+            @RequestParam("email") String email,
+            @RequestParam(required = false) List<Integer> roleIds) {
+        try {
+            // Upload the file and get the file name
+            String fileName = uploadFile.Upload(file);
+            Optional<AccountEntity> accountOptional = accountJPA.findById(id);
 
-			// Xóa các vai trò hiện tại của tài khoản
-			for (RoleAccountEntity roleAcc : account.getAccRoleAccounts()){
-				if(roleAcc != null){
-					roleAccountJPA.delete(roleAcc);
+            if (accountOptional.isPresent()) {
+                AccountEntity account = accountOptional.get();
+                account.setUsername(username);
+                account.setFullname(fullname);
+                account.setPassword(password);
+                account.setPhone(phone);
+                account.setEmail(email);
+				if(fileName != null){
+					account.setAvatar(fileName);
 				}else{
-					break;
+					account.setAvatar(account.getAvatar());
 				}
-			}
-			// Thêm các vai trò mới cho tài khoản
-            if (roleIds != null) {
-                List<RoleAccountEntity> roleAccountEntities = roleIds.stream()
-                        .filter(roleId -> roleId != null) // Filter out null values
-                        .map(roleId -> {
-                            RoleAccountEntity roleAccount = new RoleAccountEntity();
-                            RoleEntity role = roleService.findById(roleId);
-                            roleAccount.setRoleAccountAccEntity(account);
-                            roleAccount.setRoleAccountRoleEntity(role);
-                            return roleAccount;
-                        }).collect(Collectors.toList());
+                account.setStatus(true);
+                accountService.save(account);
 
-                roleAccountJPA.saveAll(roleAccountEntities);
+                // Update roles if provided
+                roleAccountJPA.deleteAll(account.getAccRoleAccounts());
+                if (roleIds != null) {
+                    List<RoleAccountEntity> roleAccountEntities = roleIds.stream()
+                            .filter(roleId -> roleId != null)
+                            .map(roleId -> {
+                                RoleAccountEntity roleAccount = new RoleAccountEntity();
+                                RoleEntity role = roleService.findById(roleId);
+                                roleAccount.setRoleAccountAccEntity(account);
+                                roleAccount.setRoleAccountRoleEntity(role);
+                                return roleAccount;
+                            }).collect(Collectors.toList());
 
-                // Set the roles to the account
-                account.setAccRoleAccounts(roleAccountEntities);
+                    roleAccountJPA.saveAll(roleAccountEntities);
+                    account.setAccRoleAccounts(roleAccountEntities);
+                }
+
+                // Send notification email
+                try {
+                    if (email == null || email.isEmpty()) {
+                        throw new IllegalArgumentException("Email address cannot be empty or null");
+                    }
+                    emailService.sendMail(email,
+                            "Account Update Notification",
+                            "Dear " + account.getFullname() + ",<br><br>Your account has been updated by the Admin." +
+                                    "<br>Username: " + account.getUsername() + "<br>Password: " + account.getPassword());
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+                }
+
+                return ResponseEntity.ok(account);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-			return "redirect:/staff";
-		}
-		return "seller/staff_detail";
-	}
-
-	@PostMapping("/delete-staff")
-	public String deleteStaffDetail(@RequestParam("acc_id") String acc_id) {
-		Optional<AccountEntity> accountOptional = accountJPA.findById(acc_id);
-		if(accountOptional.isPresent()){
-			AccountEntity accountEntity = accountOptional.get();
-			accountEntity.setStatus(false);
-			accountJPA.save(accountEntity);
-		}
-		return "redirect:/staff";
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
 
-	// ---------------------------------------PRODUCTS----------------------------------------
+    @DeleteMapping("/delete-staff/{acc_id}")
+    public ResponseEntity<String> deleteStaffDetail(@PathVariable("acc_id") String accId) {
+        Optional<AccountEntity> accountOptional = accountJPA.findById(accId);
+        if (accountOptional.isPresent()) {
+            AccountEntity accountEntity = accountOptional.get();
+            accountEntity.setStatus(false);
+            accountJPA.save(accountEntity);
+            return ResponseEntity.ok("Staff account disabled successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found.");
+        }
+    }
 
+
+
+    // ---------------------------------------PRODUCTS----------------------------------------
+
+//	@GetMapping("/products")
+//	public String products(Model model, @RequestParam("page") Optional<Integer> page) {
+//		int currentPage = page.orElse(1);
+//		if (currentPage < 1) {
+//			currentPage = 1;
+//		}
+//		int pageSize = 4;
+//		Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
+//		Page<ProductEntity> productsPage = productJPA.findAll(pageable);
+//
+//		model.addAttribute("products", productsPage);
+//
+//		int totalPages = productsPage.getTotalPages();
+//		if (totalPages > 0) {
+//			List<Integer> pageNumbers = new ArrayList<>();
+//			for (int i = 1; i <= totalPages; i++) {
+//				pageNumbers.add(i);
+//			}
+//			model.addAttribute("pageNumbers", pageNumbers);
+//		}
+//		return "seller/products";
+//	}
 	@GetMapping("/products")
-	public String products(Model model, @RequestParam("page") Optional<Integer> page) {
-		int currentPage = page.orElse(1);
-		if (currentPage < 1) {
-			currentPage = 1;
-		}
-		int pageSize = 4;
-		Pageable pageable = PageRequest.of(currentPage - 1, pageSize);
-		Page<ProductEntity> productsPage = productJPA.findAll(pageable);
-
-		model.addAttribute("products", productsPage);
-
-		int totalPages = productsPage.getTotalPages();
-		if (totalPages > 0) {
-			List<Integer> pageNumbers = new ArrayList<>();
-			for (int i = 1; i <= totalPages; i++) {
-				pageNumbers.add(i);
-			}
-			model.addAttribute("pageNumbers", pageNumbers);
-		}
-		return "seller/products";
+	public ResponseEntity<List<ProductEntity>> products() {
+		List<ProductEntity> productEntities = productJPA.findAll();
+		return ResponseEntity.ok(productEntities);
 	}
 
 	@PostMapping("/products")
@@ -486,39 +516,45 @@ public AccountEntity loginCheck(@RequestParam("username") String username,
 	}
 
 	@PostMapping("/productsDetail")
-	public String saveProductsDetail(@Valid ProductBean productBean, BindingResult error,
-									 @RequestParam("red_price") String red_price, @RequestParam("images") ArrayList<MultipartFile> file,
-									 Model model) {
+	public ResponseEntity<ProductEntity> saveProductsDetail(
+			ProductBean productBean,
+			@RequestPart("images") ArrayList<MultipartFile> files) {
+
 		ProductEntity productEntity = new ProductEntity();
+
 		Optional<CategoryEntity> catOptional = categoryJPA.findById(String.valueOf(productBean.getCat_id()));
 		Optional<UnitEntity> unitOptional = unitJPA.findById(String.valueOf(productBean.getUnit_id()));
+
 		if (catOptional.isPresent() && unitOptional.isPresent()) {
 			productEntity.setCategoryEntity(catOptional.get());
 			productEntity.setUnitEntity(unitOptional.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
+
 		productEntity.setProd_name(productBean.getProd_name());
 		productEntity.setPrice(productBean.getPrice());
-		if (red_price.equals("")) {
-			productEntity.setRed_price(0);
-		} else {
-			productEntity.setRed_price(productBean.getRed_price());
-		}
+		productEntity.setRed_price(productBean.getRed_price());
 		productEntity.setDescriptions(productBean.getDescriptions());
 		productEntity.setStatus(true);
-		ProductEntity productSaveEntity = productJPA.save(productEntity);
-		for (MultipartFile image : productBean.getImages()) {
+
+		ProductEntity savedProductEntity = productJPA.save(productEntity);
+
+		for (MultipartFile image : files) {
 			String fileName = uploadFile.Upload(image);
 			if (fileName != null) {
 				ImageEntity imageEntity = new ImageEntity();
 				imageEntity.setName(fileName);
-				imageEntity.setImageProductEntity(productSaveEntity);
+				imageEntity.setImageProductEntity(savedProductEntity);
 				imageJPA.save(imageEntity);
 			} else {
-				model.addAttribute("NotImage", "Ảnh không được để trống!");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 		}
-		return "seller/products_detail";
+
+		return ResponseEntity.ok(savedProductEntity);
 	}
+
 
 	@GetMapping("/update-product")
 	public String updateProductDetail(@RequestParam("id") String id, Model model) {
@@ -592,34 +628,42 @@ public AccountEntity loginCheck(@RequestParam("username") String username,
 	// -----------------------------------Category-------------------------------
 
 	@PostMapping("/add_category")
-	public String saveCaterory(@RequestParam("cat_name") String cat_name) {
+	public CategoryEntity saveCaterory(@RequestParam("cat_name") String cat_name) {
 		CategoryEntity entity = new CategoryEntity();
 		entity.setCat_name(cat_name);
 		categoryJPA.save(entity);
-		return "redirect:/productsDetail";
+		return categoryJPA.save(entity);
 	}
 
-	@PostMapping("/delete-category")
-	public String deleteCategory(@RequestParam("id") String id) {
-		Optional<CategoryEntity> catOptional = categoryJPA.findById(id);
-		if (catOptional.isPresent()) {
-			CategoryEntity categoryEntity = catOptional.get();
-			categoryJPA.delete(categoryEntity);
-		}
-		return "redirect:/productsDetail";
-	}
+    @DeleteMapping("/delete-category")
+    public ResponseEntity<CategoryEntity> deleteCategory(@RequestParam("id") String id) {
+        Optional<CategoryEntity> catOptional = categoryJPA.findById(id);
+        if (catOptional.isPresent()) {
+            CategoryEntity categoryEntity = catOptional.get();
+            categoryJPA.delete(categoryEntity);
+            return ResponseEntity.ok(categoryEntity);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
 	// ---------------------------------UNIT-------------------------------
 
-	@PostMapping("/add_unit")
-	public String saveUnit(@RequestParam("unit_name") String unit_name) {
-		UnitEntity entity = new UnitEntity();
-		entity.setUnit_name(unit_name);
-		unitJPA.save(entity);
-		return "redirect:/productsDetail";
-	}
+    @PostMapping("/add-unit")
+    public ResponseEntity<UnitEntity> saveUnit(@RequestParam("unit_name") String unitName) {
+        try {
+            UnitEntity entity = new UnitEntity();
+            entity.setUnit_name(unitName);
+            unitJPA.save(entity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
-	@PostMapping("/delete-unit")
+
+    @PostMapping("/delete-unit")
 	public String deleteUnit(@RequestParam("id") String id) {
 		Optional<UnitEntity> unitOptional = unitJPA.findById(id);
 		if (unitOptional.isPresent()) {
